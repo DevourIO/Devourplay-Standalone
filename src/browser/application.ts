@@ -30,7 +30,7 @@ export class Application {
     gepService.registerGames([
       kGepSupportedGameIds.TeamfightTactics,
       //kGepSupportedGameIds.DiabloIV,
-      //kGepSupportedGameIds.RocketLeague,
+      kGepSupportedGameIds.RocketLeague,
     ]);
   }
 

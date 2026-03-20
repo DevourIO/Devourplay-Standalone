@@ -42,7 +42,6 @@
         }
       ],
       "artifactName": "${productName}-Setup-${version}.${ext}",
-      "publisherName": "Overwolf Ltd",
       "legalTrademarks": "Copyright 2023 Overwolf Ltd."
     },
     "nsis": {
@@ -53,11 +52,11 @@
   "scripts": {
     "build:renderer": "webpack --config ./webpack.renderer.config.js",
     "build:main": "webpack --config ./webpack.main.config.js",
-    "build": "yarn webpack --mode=development && yarn build:main && yarn build:renderer",
-    "build:dev": "yarn webpack --watch --mode=development",
-    "build:start": "yarn run build && ow-electron . ",
+    "build": "npx webpack --mode=development && npm run build:main && npm run build:renderer",
+    "build:dev": "npx webpack --watch --mode=development",
+    "build:start": "npm run build && ow-electron . ",
     "start": "ow-electron .",
-    "build:ow-electron": "ow-electron-builder --c.extraMetadata.name=GameEventsTester --publish=never"
+    "build:ow-electron": "ow-electron-builder --c.extraMetadata.name=GameEventsTester --publish=never -mwl"
   },
   "devDependencies": {
     "@overwolf/ow-electron": "latest",
@@ -81,5 +80,8 @@
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1",
     "wrapper-webpack-plugin": "^2.1.0"
+  },
+  "dependencies": {
+    "@devour/overwolf-sdk": "file:../overwolf-sdk"
   }
 }

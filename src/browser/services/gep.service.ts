@@ -1,6 +1,10 @@
 import { app as electronApp } from 'electron';
 import { overwolf } from '@overwolf/ow-electron' // TODO: wil be @overwolf/ow-electron
 import EventEmitter from 'events';
+import {
+  onNewEventsListener,
+  onInfoUpdatesListener,
+} from "@devour/overwolf-sdk";
 
 const app = electronApp as overwolf.OverwolfApp;
 
@@ -130,11 +134,13 @@ export class GameEventsService extends EventEmitter {
     // When a new Info Update is fired
     this.gepApi.on('new-info-update', (e, gameId, ...args) => {
       this.emit('log', 'info-update', gameId, ...args);
+      onInfoUpdatesListener(args[0]);
     });
 
     // When a new Game Event is fired
     this.gepApi.on('new-game-event', (e, gameId, ...args) => {
       this.emit('log', 'new-event', gameId, ...args);
+      onNewEventsListener(args[0]);
     });
 
     // If GEP encounters an error

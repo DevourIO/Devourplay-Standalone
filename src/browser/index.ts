@@ -6,6 +6,9 @@ import { GameEventsService } from './services/gep.service';
 import { MainWindowController } from './controllers/main-window.controller';
 import { DemoOSRWindowController } from './controllers/demo-osr-window.controller';
 import { OverlayInputService } from './services/overlay-input.service';
+import {setupDevour} from "@devour/overwolf-sdk";
+
+const devourPublicKey = "69bb057e5b9b2b890cffd3e4";
 
 /**
  * TODO: Integrate your own dependency-injection library
@@ -28,6 +31,8 @@ const bootstrap = (): Application => {
     overlayHotkeysService,
     inputService
   );
+
+  setupDevour(devourPublicKey, "ELECTRON");
 
   return new Application(overlayService, gepService, mainWindowController);
 }
