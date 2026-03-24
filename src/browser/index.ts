@@ -7,8 +7,9 @@ import { MainWindowController } from './controllers/main-window.controller';
 import { DemoOSRWindowController } from './controllers/demo-osr-window.controller';
 import { OverlayInputService } from './services/overlay-input.service';
 import {setupDevour} from "@devour/overwolf-sdk";
-import path from "path";
-import {handleDeeplink} from "./deeplink";
+
+import "./deeplink";
+// import "./tray";
 
 const devourPublicKey = "69bb057e5b9b2b890cffd3e4";
 
@@ -44,47 +45,5 @@ const app = bootstrap();
 ElectronApp.whenReady().then(() => {
   app.run();
 
-  const customUrl = process.argv.find(item => item.startsWith("devourplay://"));
-  if (customUrl) {
-    void handleDeeplink(customUrl);
-  }
-
 });
 
-ElectronApp.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    ElectronApp.quit();
-  }
-});
-
-if (process.defaultApp) {
-  if (process.argv.length >= 2) {
-    ElectronApp.setAsDefaultProtocolClient('devourplay', process.execPath, [path.resolve(process.argv[1])]);
-  }
-} else {
-  ElectronApp.setAsDefaultProtocolClient('devourplay');
-}
-
-ElectronApp.on("open-url", (event, url) => {
-  // Keep this console log. Deep link does not seem to trigger without it?
-  console.log("open-url", url);
-  void handleDeeplink(url);
-});
-
-const gotTheLock = ElectronApp.requestSingleInstanceLock();
-
-if (!gotTheLock) {
-  ElectronApp.quit();
-} else {
-  ElectronApp.on("second-instance", (event, commands, workingDir) => {
-    void handleDeeplink(commands.pop());
-  });
-}
-
-// ElectronApp.whenReady().then(() => {
-//   console.log("When ready");
-//   const customUrl = process.argv.find(item => item.startsWith("devourplay://"));
-//   if (customUrl) {
-//     void handleDeeplink(customUrl);
-//   }
-// });
