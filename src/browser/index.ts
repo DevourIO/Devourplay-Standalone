@@ -9,9 +9,10 @@ import { OverlayInputService } from './services/overlay-input.service';
 import {setupDevour} from "@devour/overwolf-sdk";
 
 import "./deeplink";
-// import "./tray";
+import "./tray";
 
 const devourPublicKey = "69bb057e5b9b2b890cffd3e4";
+setupDevour(devourPublicKey, "ELECTRON");
 
 /**
  * TODO: Integrate your own dependency-injection library
@@ -23,8 +24,7 @@ const bootstrap = (): Application => {
   const inputService = new OverlayInputService(overlayService);
 
   const createDemoOsrWindowControllerFactory = (): DemoOSRWindowController => {
-    const controller = new DemoOSRWindowController(overlayService);
-    return controller;
+    return new DemoOSRWindowController(overlayService);
   }
 
   const mainWindowController = new MainWindowController(
@@ -40,10 +40,10 @@ const bootstrap = (): Application => {
   return new Application(overlayService, gepService, mainWindowController);
 }
 
-const app = bootstrap();
+export const mainApp = bootstrap();
 
 ElectronApp.whenReady().then(() => {
-  app.run();
+  mainApp.run();
 
 });
 

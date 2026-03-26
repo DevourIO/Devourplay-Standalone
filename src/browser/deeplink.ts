@@ -1,6 +1,7 @@
 import {devourAuthUser, devourSwapToken} from "@devour/overwolf-sdk";
 import {app as ElectronApp} from "electron";
 import path from "path";
+import {refreshTrayMenu} from "./tray";
 
 async function handleDeeplink(urlString: string) {
 	// Handle url
@@ -9,6 +10,7 @@ async function handleDeeplink(urlString: string) {
 	try {
 		const limitedToken = await devourSwapToken(fullToken);
 		devourAuthUser(limitedToken.oAuthToken);
+		refreshTrayMenu();
 	} catch (e) {
 		console.error("error swapping devour token", e);
 	}

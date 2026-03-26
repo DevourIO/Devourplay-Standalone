@@ -1,5 +1,5 @@
 {
-  "name": "ow-electron-packages-sample",
+  "name": "DevourPlay",
   "version": "22.3.13",
   "description": "ow-electron package sample app",
   "main": "dist/browser/index.js",
@@ -16,7 +16,7 @@
   },
   "build": {
     "nodeGypRebuild": false,
-    "appId": "com.overwolf.packageSample",
+    "appId": "com.overwolf.devourPlay",
     "protocols": {
       "name": "devourplay-protocol",
       "schemes": [
@@ -27,7 +27,7 @@
     "overwolf": {
       "disableAdOptimization": false
     },
-    "productName": "owElectronpackageSample",
+    "productName": "DevourPlay",
     "directories": {
       "output": "build"
     },
@@ -47,6 +47,7 @@
           ]
         }
       ],
+      "icon": "dist/assets/images/icon.ico",
       "artifactName": "${productName}-Setup-${version}.${ext}",
       "legalTrademarks": "Copyright 2023 Overwolf Ltd."
     },
@@ -58,7 +59,7 @@
   "scripts": {
     "build:renderer": "webpack --config ./webpack.renderer.config.js",
     "build:main": "webpack --config ./webpack.main.config.js",
-    "build": "npx webpack --mode=development && npm run build:main && npm run build:renderer",
+    "build": "cp -R src/assets dist && npx webpack --mode=development && npm run build:main && npm run build:renderer",
     "build:dev": "npx webpack --watch --mode=development",
     "build:start": "npm run build && ow-electron . ",
     "start": "ow-electron .",
