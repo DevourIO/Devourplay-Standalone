@@ -1,11 +1,11 @@
 {
   "name": "DevourPlay",
-  "version": "22.3.13",
-  "description": "ow-electron package sample app",
+  "version": "0.1.0",
+  "description": "DevourPlay – Play, earn, & unlock rewards while you game.",
   "main": "dist/browser/index.js",
   "author": {
-    "name": "overwolf",
-    "email": "overwolf@gmail.com"
+    "name": "Devour",
+    "email": "hello@devourgo.io"
   },
   "license": "MIT",
   "overwolf": {

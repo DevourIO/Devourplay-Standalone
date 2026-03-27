@@ -2,6 +2,7 @@ import {Menu, Tray, nativeImage, app as ElectronApp, shell} from "electron";
 import {devourIsLoggedIn, devourUnauthUser} from "@devour/overwolf-sdk";
 import path from "path";
 import {mainApp} from "./index";
+import {eventBusInstance} from "./services/eventBus.service";
 
 // save a reference to the Tray object globally to avoid garbage collection
 let tray: Tray | null = null;
@@ -10,6 +11,13 @@ let isQuitting: boolean = false;
 export function refreshTrayMenu() {
 	if (!tray) return; // Don't create a new tray if it doesn't exist
 	const contextMenu = Menu.buildFromTemplate([
+		{
+			label: "About",
+			click: () => {
+				const url = "https://devourplay.gg";
+				void shell.openExternal(url);
+			},
+		},
 		{
 			label: "Debug",
 			click: () => {
@@ -21,6 +29,7 @@ export function refreshTrayMenu() {
 			click: () => {
 				devourUnauthUser();
 				refreshTrayMenu();
+				eventBusInstance.emit("log", "User Logged Out");
 			},
 		} : {
 			label: "Login",

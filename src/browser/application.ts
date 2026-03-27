@@ -4,64 +4,61 @@ import { OverlayService } from './services/overlay.service';
 import { kGameIds } from "@overwolf/ow-electron-packages-types/game-list";
 import { kGepSupportedGameIds } from '@overwolf/ow-electron-packages-types/gep-supported-games';
 import { GameEventsService } from './services/gep.service';
+import {EventBusService} from "./services/eventBus.service";
+import {rotateLogs, writeLog} from "./logs";
 
 export class Application {
-  /**
-   *
-   */
-  constructor(
-    private readonly overlayService: OverlayService,
-    private readonly gepService: GameEventsService,
-    private readonly mainWindowController: MainWindowController) {
+	constructor(
+		private readonly overlayService: OverlayService,
+		private readonly gepService: GameEventsService,
+		private readonly mainWindowController: MainWindowController,
+		private readonly eventBusService: EventBusService,
+	) {
 
-    overlayService.on('ready', this.onOverlayServiceReady.bind(this));
+		overlayService.on('ready', this.onOverlayServiceReady.bind(this));
 
-    overlayService.on('injection-decision-handling', (
-      event: GameLaunchEvent,
-      gameInfo: GameInfo
-    ) => {
-      // Always inject because we tell it which games we want in
-      // onOverlayServiceReady
-      event.inject();
-    })
+		overlayService.on('injection-decision-handling', (
+			event: GameLaunchEvent,
+			gameInfo: GameInfo
+		) => {
+			// Always inject because we tell it which games we want in
+			// onOverlayServiceReady
+			event.inject();
+		})
 
-    // for gep supported games goto:
-    // https://overwolf.github.io/api/electron/game-events/
-    gepService.registerGames([
-      kGepSupportedGameIds.TeamfightTactics,
-      //kGepSupportedGameIds.DiabloIV,
-      kGepSupportedGameIds.RocketLeague,
-    ]);
-  }
+		// for gep supported games goto:
+		// https://overwolf.github.io/api/electron/game-events/
+		gepService.registerGames([
+			kGepSupportedGameIds.TeamfightTactics,
+			//kGepSupportedGameIds.DiabloIV,
+			kGepSupportedGameIds.RocketLeague,
+		]);
 
-  /**
-   *
-   */
-  public run() {
-    this.initialize();
-  }
+		rotateLogs();
+		gepService.on('log', writeLog);
+		overlayService.on('log', writeLog);
+		eventBusService.on('log', writeLog);
+	}
 
-  /**
-   *
-   */
-  private initialize() {
-  }
+	public run() {
+		this.initialize();
+	}
 
-  public showMainWindow() {
-    const showDevTools = true;
-    this.mainWindowController.createAndShow(showDevTools);
-  }
+	private initialize() {
+	}
 
-  /**
-   *
-   */
-  private onOverlayServiceReady() {
-    // Which games to support overlay for
-    this.overlayService.registerToGames([
-      kGameIds.LeagueofLegends,
-      kGameIds.TeamfightTactics,
-      kGameIds.RocketLeague,
-      kGameIds.DiabloIV
-    ]);
-  }
+	public showMainWindow() {
+		const showDevTools = true;
+		this.mainWindowController.createAndShow(showDevTools);
+	}
+
+	private onOverlayServiceReady() {
+		// Which games to support overlay for
+		this.overlayService.registerToGames([
+			kGameIds.LeagueofLegends,
+			kGameIds.TeamfightTactics,
+			kGameIds.RocketLeague,
+			kGameIds.DiabloIV
+		]);
+	}
 }

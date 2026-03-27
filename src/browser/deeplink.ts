@@ -2,6 +2,7 @@ import {devourAuthUser, devourSwapToken} from "@devour/overwolf-sdk";
 import {app as ElectronApp} from "electron";
 import path from "path";
 import {refreshTrayMenu} from "./tray";
+import {eventBusInstance} from "./services/eventBus.service";
 
 async function handleDeeplink(urlString: string) {
 	// Handle url
@@ -9,10 +10,11 @@ async function handleDeeplink(urlString: string) {
 	const fullToken = url.searchParams.get("token");
 	try {
 		const limitedToken = await devourSwapToken(fullToken);
+		eventBusInstance.emit("log", `Swapped Devour auth token ${fullToken.substring(0, 5)}... to oAuth token ${limitedToken.oAuthToken.substring(0, 5)}...` );
 		devourAuthUser(limitedToken.oAuthToken);
 		refreshTrayMenu();
-	} catch (e) {
-		console.error("error swapping devour token", e);
+	} catch (err) {
+		eventBusInstance.emit("log", `Error swapping devour token: ${JSON.stringify(err, Object.getOwnPropertyNames(err))}`);
 	}
 
 }
@@ -27,7 +29,7 @@ if (process.defaultApp) {
 
 ElectronApp.on("open-url", (event, url) => {
 	// Keep this console log. Deep link does not seem to trigger without it?
-	console.log("open-url", url);
+	eventBusInstance.emit("log", `Deeplink URL opened ${url.substring(0, 25)}...` );
 	void handleDeeplink(url);
 });
 

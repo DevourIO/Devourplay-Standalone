@@ -6,6 +6,7 @@ import { OverlayService } from '../services/overlay.service';
 import { overwolf } from '@overwolf/ow-electron';
 import { OverlayHotkeysService } from '../services/overlay-hotkeys.service';
 import { ExclusiveHotKeyMode, OverlayInputService } from '../services/overlay-input.service';
+import {EventBusService} from "../services/eventBus.service";
 
 const owElectronApp = electronApp as overwolf.OverwolfApp;
 
@@ -23,13 +24,14 @@ export class MainWindowController {
     private readonly overlayService: OverlayService,
     private readonly createDemoOsrWinController: () => DemoOSRWindowController,
     private readonly overlayHotkeysService: OverlayHotkeysService,
-    private readonly overlayInputService: OverlayInputService
+    private readonly overlayInputService: OverlayInputService,
+    private readonly eventBusService: EventBusService,
   ) {
     this.registerToIpc();
 
     gepService.on('log', this.printLogMessage.bind(this));
     overlayService.on('log', this.printLogMessage.bind(this));
-
+    eventBusService.on('log', this.printLogMessage.bind(this));
     overlayHotkeysService.on('log', this.printLogMessage.bind(this));
 
     owElectronApp.overwolf.packages.on('crashed', (e, ...args) => {

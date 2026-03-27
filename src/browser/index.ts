@@ -1,15 +1,17 @@
-import {app as ElectronApp } from 'electron';
-import { Application } from "./application";
-import { OverlayHotkeysService } from './services/overlay-hotkeys.service';
-import { OverlayService } from './services/overlay.service';
-import { GameEventsService } from './services/gep.service';
-import { MainWindowController } from './controllers/main-window.controller';
-import { DemoOSRWindowController } from './controllers/demo-osr-window.controller';
-import { OverlayInputService } from './services/overlay-input.service';
+import {app as ElectronApp} from 'electron';
+import {Application} from "./application";
+import {OverlayHotkeysService} from './services/overlay-hotkeys.service';
+import {OverlayService} from './services/overlay.service';
+import {GameEventsService} from './services/gep.service';
+import {MainWindowController} from './controllers/main-window.controller';
+import {DemoOSRWindowController} from './controllers/demo-osr-window.controller';
+import {OverlayInputService} from './services/overlay-input.service';
 import {setupDevour} from "@devour/overwolf-sdk";
+import {eventBusInstance} from "./services/eventBus.service";
 
 import "./deeplink";
 import "./tray";
+import {closeLog} from "./logs";
 
 const devourPublicKey = "69bb057e5b9b2b890cffd3e4";
 setupDevour(devourPublicKey, "ELECTRON");
@@ -18,32 +20,42 @@ setupDevour(devourPublicKey, "ELECTRON");
  * TODO: Integrate your own dependency-injection library
  */
 const bootstrap = (): Application => {
-  const overlayService = new OverlayService();
-  const overlayHotkeysService = new OverlayHotkeysService(overlayService);
-  const gepService = new GameEventsService();
-  const inputService = new OverlayInputService(overlayService);
+	const overlayService = new OverlayService();
+	const overlayHotkeysService = new OverlayHotkeysService(overlayService);
+	const gepService = new GameEventsService();
+	const inputService = new OverlayInputService(overlayService);
 
-  const createDemoOsrWindowControllerFactory = (): DemoOSRWindowController => {
-    return new DemoOSRWindowController(overlayService);
-  }
+	const createDemoOsrWindowControllerFactory = (): DemoOSRWindowController => {
+		return new DemoOSRWindowController(overlayService);
+	}
 
-  const mainWindowController = new MainWindowController(
-    gepService,
-    overlayService,
-    createDemoOsrWindowControllerFactory,
-    overlayHotkeysService,
-    inputService
-  );
+	const mainWindowController = new MainWindowController(
+		gepService,
+		overlayService,
+		createDemoOsrWindowControllerFactory,
+		overlayHotkeysService,
+		inputService,
+		eventBusInstance,
+	);
 
-  setupDevour(devourPublicKey, "ELECTRON");
+	setupDevour(devourPublicKey, "ELECTRON");
 
-  return new Application(overlayService, gepService, mainWindowController);
+	return new Application(
+		overlayService,
+		gepService,
+		mainWindowController,
+		eventBusInstance,
+	);
 }
 
 export const mainApp = bootstrap();
 
 ElectronApp.whenReady().then(() => {
-  mainApp.run();
+	mainApp.run();
 
 });
 
+ElectronApp.on('before-quit', (event) => {
+	eventBusInstance.emit("log", "App is quitting, running cleanup...");
+	closeLog();
+});
