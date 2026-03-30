@@ -2,7 +2,7 @@ import {devourAuthUser, devourSwapToken} from "@devour/overwolf-sdk";
 import {app as ElectronApp} from "electron";
 import path from "path";
 import {refreshTrayMenu} from "./tray";
-import {eventBusInstance} from "./services/eventBus.service";
+import {eventBusInstance} from "../browser/services/eventBus.service";
 
 async function handleDeeplink(urlString: string) {
 	// Handle url

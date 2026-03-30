@@ -5,7 +5,7 @@ import { kGameIds } from "@overwolf/ow-electron-packages-types/game-list";
 import { kGepSupportedGameIds } from '@overwolf/ow-electron-packages-types/gep-supported-games';
 import { GameEventsService } from './services/gep.service';
 import {EventBusService} from "./services/eventBus.service";
-import {rotateLogs, writeLog} from "./logs";
+import {rotateLogs, writeLog} from "../utils/logs";
 
 export class Application {
 	constructor(

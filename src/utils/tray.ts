@@ -1,12 +1,15 @@
 import {Menu, Tray, nativeImage, app as ElectronApp, shell} from "electron";
 import {devourIsLoggedIn, devourUnauthUser} from "@devour/overwolf-sdk";
 import path from "path";
-import {mainApp} from "./index";
-import {eventBusInstance} from "./services/eventBus.service";
+import {mainApp} from "../browser";
+import {eventBusInstance} from "../browser/services/eventBus.service";
+import AppUpdater, { autoUpdater } from "./updater";
 
 // save a reference to the Tray object globally to avoid garbage collection
 let tray: Tray | null = null;
 let isQuitting: boolean = false;
+
+const appUpdater: AppUpdater | null = new AppUpdater();
 
 export function refreshTrayMenu() {
 	if (!tray) return; // Don't create a new tray if it doesn't exist
@@ -36,6 +39,14 @@ export function refreshTrayMenu() {
 			click: () => {
 				const url = "https://develop-mirror2.web.devourgo.io/deeplink";
 				void shell.openExternal(url);
+			},
+		},
+		{
+			label: "Check for Updates...",
+			click: () => {
+				if (appUpdater) {
+					void autoUpdater.checkForUpdatesAndNotify();
+				}
 			},
 		},
 		{

@@ -8,10 +8,10 @@ import {DemoOSRWindowController} from './controllers/demo-osr-window.controller'
 import {OverlayInputService} from './services/overlay-input.service';
 import {setupDevour} from "@devour/overwolf-sdk";
 import {eventBusInstance} from "./services/eventBus.service";
+import {closeLog} from "../utils/logs";
 
-import "./deeplink";
-import "./tray";
-import {closeLog} from "./logs";
+import "../utils/deeplink";
+import "../utils/tray";
 
 const devourPublicKey = "69bb057e5b9b2b890cffd3e4";
 setupDevour(devourPublicKey, "ELECTRON");
