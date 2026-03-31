@@ -7,6 +7,10 @@
     "name": "Devour",
     "email": "hello@devourgo.io"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:DevourIO/Devourplay-Standalone.git"
+  },
   "license": "MIT",
   "overwolf": {
     "packages": [
@@ -37,7 +41,11 @@
       "*.html",
       "*.exe"
     ],
-    "copyright": "Copyright 2023 Overwolf Ltd.",
+    "copyright": "Copyright 2026 Devour Next Inc.",
+    "publish": [{
+      "provider": "github",
+      "token": "lulz"
+    }],
     "win": {
       "target": [
         {
@@ -49,7 +57,7 @@
       ],
       "icon": "dist/assets/images/icon.ico",
       "artifactName": "${productName}-Setup-${version}.${ext}",
-      "legalTrademarks": "Copyright 2023 Overwolf Ltd."
+      "legalTrademarks": "Copyright 2026 Devour Next Inc."
     },
     "nsis": {
       "oneClick": false,
@@ -63,7 +71,8 @@
     "build:dev": "npx webpack --watch --mode=development",
     "build:start": "npm run build && ow-electron . ",
     "start": "ow-electron .",
-    "build:ow-electron": "ow-electron-builder --c.extraMetadata.name=GameEventsTester --publish=never -mwl"
+    "build:ow-electron": "ow-electron-builder --c.extraMetadata.name=GameEventsTester --publish=never -mwl",
+    "publish:release": "ow-electron-builder --publish=always -w"
   },
   "devDependencies": {
     "@overwolf/ow-electron": "latest",

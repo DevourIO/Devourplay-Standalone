@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { dialog, BrowserWindow, app } from "electron";
 
 import { autoUpdater } from "electron-updater";
@@ -29,15 +28,14 @@ class AppUpdater {
 		 * you must specify the exact path for THIS specific build:
 		 */
 		const feedUrl = `${baseUrl}/ow-standalone/${process.platform}/${process.arch}`;
-		eventBusInstance.emit("Set Feed URL:", feedUrl);
-		autoUpdater.setFeedURL(feedUrl);
-		console.log("Get Feed URL:", autoUpdater.getFeedURL());
+		// autoUpdater.setFeedURL(feedUrl);
+		eventBusInstance.emit("log",`Get Feed URL: ${autoUpdater.getFeedURL()}`);
 
 		this.initializeEvents();
 
 
 		if (app.isPackaged) {
-			eventBusInstance.emit("[Updater] Updates are enabled");
+			eventBusInstance.emit("log","[Updater] Updates are enabled");
 
 			autoUpdater.checkForUpdatesAndNotify();
 
@@ -55,7 +53,7 @@ class AppUpdater {
 			// 	this.cleanup();
 			// });
 		} else {
-			eventBusInstance.emit("[Updater] No updates in unpackaged apps");
+			eventBusInstance.emit("log","[Updater] No updates in unpackaged apps");
 		}
 	}
 
@@ -66,14 +64,14 @@ class AppUpdater {
 	private initializeEvents(): void {
 		// This library gives you great progress tracking
 		autoUpdater.on("download-progress", (progressObj) => {
-			eventBusInstance.emit(`Download speed: ${progressObj.bytesPerSecond} - ${progressObj.percent}%`);
+			eventBusInstance.emit("log",`Download speed: ${progressObj.bytesPerSecond} - ${progressObj.percent}%`);
 			if (this.mainWindow) {
-				eventBusInstance.emit(`Download speed: ${progressObj.bytesPerSecond} - ${progressObj.percent}%`);
+				eventBusInstance.emit("log",`Download speed: ${progressObj.bytesPerSecond} - ${progressObj.percent}%`);
 			}
 		});
 
 		autoUpdater.on("update-available", (info) => {
-			eventBusInstance.emit(`[Updater] Update available: ${JSON.stringify(info)}`);
+			eventBusInstance.emit("log",`[Updater] Update available: ${JSON.stringify(info)}`);
 		});
 
 		autoUpdater.on("update-downloaded", (info) => {
@@ -93,7 +91,7 @@ class AppUpdater {
 		});
 
 		autoUpdater.on("error", (err: Error) => {
-			eventBusInstance.emit(`[Updater Error]: ${JSON.stringify(err.message)}`);
+			eventBusInstance.emit("log",`[Updater Error]: ${JSON.stringify(err.message)}`);
 		});
 	}
 

@@ -1,5 +1,5 @@
 import { app as electronApp } from 'electron';
-import { overwolf } from '@overwolf/ow-electron' // TODO: wil be @overwolf/ow-electron
+import { overwolf } from '@overwolf/ow-electron';
 import EventEmitter from 'events';
 import {
   onNewEventsListener,
