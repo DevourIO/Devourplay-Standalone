@@ -4,7 +4,7 @@ import { OverlayService } from './services/overlay.service';
 import { kGameIds } from "@overwolf/ow-electron-packages-types/game-list";
 import { kGepSupportedGameIds } from '@overwolf/ow-electron-packages-types/gep-supported-games';
 import { GameEventsService } from './services/gep.service';
-import {EventBusService} from "./services/eventBus.service";
+import {eventBusInstance, EventBusService} from "./services/eventBus.service";
 import {rotateLogs, writeLog} from "../utils/logs";
 
 export class Application {
@@ -26,13 +26,21 @@ export class Application {
 			event.inject();
 		})
 
-		// for gep supported games goto:
-		// https://overwolf.github.io/api/electron/game-events/
-		gepService.registerGames([
-			kGepSupportedGameIds.TeamfightTactics,
-			kGepSupportedGameIds.DiabloIV,
-			kGepSupportedGameIds.RocketLeague,
-		]);
+		fetch("https://game-events-status.overwolf.com/all_prod.json")
+			.then(response => response.json())
+			.then(data => {
+				const gameIds: number[] = data.map((item) => Number(item.game_id)).filter(Boolean);
+				gepService.registerGames(gameIds);
+				eventBusInstance.emit("log", `Registered GEP game IDs: ${gameIds.join(", ")}`);
+			})
+			.catch(err => {
+				gepService.registerGames([
+					kGepSupportedGameIds.TeamfightTactics,
+					kGepSupportedGameIds.DiabloIV,
+					kGepSupportedGameIds.RocketLeague,
+				]);
+				eventBusInstance.emit("log", `Error fetching games list: ${JSON.stringify(err, Object.getOwnPropertyNames(err))}`);
+			});
 
 		rotateLogs();
 		gepService.on('log', writeLog);
