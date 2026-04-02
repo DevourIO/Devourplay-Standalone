@@ -44,7 +44,7 @@
     "copyright": "Copyright 2026 Devour Next Inc.",
     "publish": [{
       "provider": "github",
-      "token": "lulz"
+      "private": false
     }],
     "win": {
       "target": [
@@ -57,17 +57,21 @@
       ],
       "icon": "dist/assets/images/icon.ico",
       "artifactName": "${productName}-Setup-${version}.${ext}",
-      "legalTrademarks": "Copyright 2026 Devour Next Inc."
+      "legalTrademarks": "Copyright 2026 Devour Next Inc.",
+      "signtoolOptions": {
+        "sign": "sign.js"
+      }
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "include": "scripts/installer.nsh"
     }
   },
   "scripts": {
     "build:renderer": "webpack --config ./webpack.renderer.config.js",
     "build:main": "webpack --config ./webpack.main.config.js",
-    "build": "cp -R src/assets dist && npx webpack --mode=development && npm run build:main && npm run build:renderer",
+    "build": "mkdir -p dist/assets && cp -R src/assets dist && npx webpack --mode=development && npm run build:main && npm run build:renderer",
     "build:dev": "npx webpack --watch --mode=development",
     "build:start": "npm run build && ow-electron . ",
     "start": "ow-electron .",

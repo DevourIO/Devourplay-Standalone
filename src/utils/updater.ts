@@ -1,5 +1,5 @@
 import { dialog, BrowserWindow, app } from "electron";
-
+import { exec } from 'child_process';
 import { autoUpdater } from "electron-updater";
 import {eventBusInstance} from "../browser/services/eventBus.service";
 
@@ -14,21 +14,6 @@ class AppUpdater {
 		autoUpdater.autoDownload = true;
 		autoUpdater.autoInstallOnAppQuit = true;
 
-
-		/*
-		 * 2. Point to your GCP Bucket
-		 * electron-updater handles the /win/ or /mac/ subfolders internally
-		 * if you structure your bucket that way, but usually, it just expects
-		 * the base URL where the .yml files live.
-		 */
-		const baseUrl = "https://storage.googleapis.com/ow-releases";
-
-		/*
-		 * Logic: if you keep your subfolder structure (win-x64, etc.),
-		 * you must specify the exact path for THIS specific build:
-		 */
-		const feedUrl = `${baseUrl}/ow-standalone/${process.platform}/${process.arch}`;
-		// autoUpdater.setFeedURL(feedUrl);
 		eventBusInstance.emit("log",`Get Feed URL: ${autoUpdater.getFeedURL()}`);
 
 		this.initializeEvents();
@@ -57,12 +42,25 @@ class AppUpdater {
 		}
 	}
 
+	private setUpdateFlag(value: boolean): void {
+		if (process.platform === 'win32') {
+			const regValue = value ? '1' : '0';
+			const command = `reg add "HKCU\\Software\\DevourPlay" /v "UpdateInProgress" /t REG_SZ /d "${regValue}" /f`;
+			exec(command, (error) => {
+				if (error) {
+					console.error('Failed to set update flag:', error);
+				}
+			});
+		}
+	}
+
 	setMainWindow(mainWindow: BrowserWindow | null): void {
 		this.mainWindow = mainWindow;
 	}
 
 	private initializeEvents(): void {
 		// This library gives you great progress tracking
+		// Note: flag will be cleared by the NSIS script after update
 		autoUpdater.on("download-progress", (progressObj) => {
 			eventBusInstance.emit("log",`Download speed: ${progressObj.bytesPerSecond} - ${progressObj.percent}%`);
 			if (this.mainWindow) {
@@ -75,6 +73,9 @@ class AppUpdater {
 		});
 
 		autoUpdater.on("update-downloaded", (info) => {
+			// Set the update flag before showing dialog
+			this.setUpdateFlag(true);
+
 			const dialogOpts = {
 				type: "info" as const,
 				buttons: ["Install now", "Install when I close the app"],
