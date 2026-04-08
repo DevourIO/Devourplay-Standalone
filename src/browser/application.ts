@@ -6,12 +6,14 @@ import { kGepSupportedGameIds } from '@overwolf/ow-electron-packages-types/gep-s
 import { GameEventsService } from './services/gep.service';
 import {eventBusInstance, EventBusService} from "./services/eventBus.service";
 import {rotateLogs, writeLog} from "../utils/logs";
+import {LoginWindowController} from "./controllers/login-window.controller";
 
 export class Application {
 	constructor(
 		private readonly overlayService: OverlayService,
 		private readonly gepService: GameEventsService,
 		private readonly mainWindowController: MainWindowController,
+		private readonly loginWindowController: LoginWindowController,
 		private readonly eventBusService: EventBusService,
 	) {
 
@@ -58,6 +60,14 @@ export class Application {
 	public showMainWindow() {
 		const showDevTools = true;
 		this.mainWindowController.createAndShow(showDevTools);
+	}
+
+	public showLoginWindow() {
+		this.loginWindowController.createAndShow();
+	}
+
+	public closeLoginWindow() {
+		this.loginWindowController.closeWindow();
 	}
 
 	private onOverlayServiceReady() {

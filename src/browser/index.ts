@@ -12,6 +12,7 @@ import {closeLog} from "../utils/logs";
 
 import "../utils/deeplink";
 import "../utils/tray";
+import {LoginWindowController} from "./controllers/login-window.controller";
 
 const devourPublicKey = "69bb057e5b9b2b890cffd3e4";
 setupDevour(devourPublicKey, "ELECTRON");
@@ -38,12 +39,15 @@ const bootstrap = (): Application => {
 		eventBusInstance,
 	);
 
+	const loginWindowController = new LoginWindowController();
+
 	setupDevour(devourPublicKey, "ELECTRON");
 
 	return new Application(
 		overlayService,
 		gepService,
 		mainWindowController,
+		loginWindowController,
 		eventBusInstance,
 	);
 }

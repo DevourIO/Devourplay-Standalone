@@ -3,6 +3,7 @@ import {app as ElectronApp} from "electron";
 import path from "path";
 import {refreshTrayMenu} from "./tray";
 import {eventBusInstance} from "../browser/services/eventBus.service";
+import {mainApp} from "../browser";
 
 async function handleDeeplink(urlString: string) {
 	// Handle url
@@ -12,6 +13,7 @@ async function handleDeeplink(urlString: string) {
 		const limitedToken = await devourSwapToken(fullToken);
 		eventBusInstance.emit("log", `Swapped Devour auth token ${fullToken.substring(0, 5)}... to oAuth token ${limitedToken.oAuthToken.substring(0, 5)}...` );
 		devourAuthUser(limitedToken.oAuthToken);
+		mainApp.closeLoginWindow();
 		refreshTrayMenu();
 	} catch (err) {
 		eventBusInstance.emit("log", `Error swapping devour token: ${JSON.stringify(err, Object.getOwnPropertyNames(err))}`);

@@ -71,6 +71,12 @@ export class MainWindowController {
    *
    */
   public createAndShow(showDevTools: boolean) {
+    // If window already exists, just focus it instead of creating a new one
+    if (this.browserWindow && !this.browserWindow.isDestroyed()) {
+      this.focusWindow();
+      return;
+    }
+
     this.browserWindow = new BrowserWindow({
       width: 900,
       height: 900,
@@ -88,6 +94,19 @@ export class MainWindowController {
     });
 
     this.browserWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+  }
+
+  public focusWindow() {
+    if (this.browserWindow && !this.browserWindow.isDestroyed()) {
+      // Show the window if it's minimized
+      if (this.browserWindow.isMinimized()) {
+        this.browserWindow.restore();
+      }
+
+      // Bring the window to front and focus it
+      this.browserWindow.show();
+      this.browserWindow.focus();
+    }
   }
 
   /**

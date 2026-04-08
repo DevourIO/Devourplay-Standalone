@@ -37,8 +37,8 @@ export function refreshTrayMenu() {
 		} : {
 			label: "Login",
 			click: () => {
-				const url = "https://develop-mirror2.web.devourgo.io/deeplink";
-				void shell.openExternal(url);
+				mainApp.showLoginWindow();
+				// void shell.openExternal(loginUrl);
 			},
 		},
 		{
