@@ -1,4 +1,4 @@
-import {Menu, Tray, nativeImage, app as ElectronApp, shell} from "electron";
+import {Menu, Tray, nativeImage, app as ElectronApp, BrowserWindow} from "electron";
 import {devourIsLoggedIn, devourUnauthUser} from "@devour/overwolf-sdk";
 import path from "path";
 import {mainApp} from "../browser";
@@ -15,10 +15,14 @@ export function refreshTrayMenu() {
 	if (!tray) return; // Don't create a new tray if it doesn't exist
 	const contextMenu = Menu.buildFromTemplate([
 		{
-			label: "About",
+			label: "Help",
 			click: () => {
-				const url = "https://devourplay.gg";
-				void shell.openExternal(url);
+				const win = new BrowserWindow({ width: 400, height: 400, show: true });
+
+				// Load a remote URL
+				const url = "https://devourplay.gg/external/help";
+				win.loadURL(url);
+				// void shell.openExternal(url);
 			},
 		},
 		{
