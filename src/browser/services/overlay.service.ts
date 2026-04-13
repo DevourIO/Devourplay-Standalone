@@ -7,9 +7,6 @@ import {
   GamesFilter,
 } from '@overwolf/ow-electron-packages-types';
 import EventEmitter from 'events';
-import {
-  registerDevourGameListeners,
-} from "@devour/overwolf-sdk";
 
 const app = electronApp as overwolf.OverwolfApp;
 
@@ -36,7 +33,7 @@ export class OverlayService extends EventEmitter {
    *
    */
   public async createNewOsrWindow(
-    options: OverlayWindowOptions
+      options: OverlayWindowOptions
   ): Promise<OverlayBrowserWindow> {
     const overlay = await this.overlayApi.createWindow(options);
     return overlay;
@@ -104,7 +101,6 @@ export class OverlayService extends EventEmitter {
         // if the application is not eleveted.
         return;
       }
-      registerDevourGameListeners(gameInfo.classId.toString());
       // pass the decision to the application
       this.emit('injection-decision-handling', event, gameInfo);
 

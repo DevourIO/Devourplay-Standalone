@@ -15,7 +15,6 @@ import "../utils/tray";
 import {LoginWindowController} from "./controllers/login-window.controller";
 
 const devourPublicKey = "69bb057e5b9b2b890cffd3e4";
-setupDevour(devourPublicKey, "ELECTRON");
 
 /**
  * TODO: Integrate your own dependency-injection library
@@ -41,7 +40,10 @@ const bootstrap = (): Application => {
 
 	const loginWindowController = new LoginWindowController();
 
-	setupDevour(devourPublicKey, "ELECTRON");
+	setupDevour({
+		publicKey: devourPublicKey,
+		engine: "ELECTRON",
+	});
 
 	return new Application(
 		overlayService,

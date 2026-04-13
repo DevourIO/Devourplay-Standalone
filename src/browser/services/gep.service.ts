@@ -4,6 +4,7 @@ import EventEmitter from 'events';
 import {
   onNewEventsListener,
   onInfoUpdatesListener,
+  registerDevourGameListeners,
 } from "@devour/overwolf-sdk";
 
 const app = electronApp as overwolf.OverwolfApp;
@@ -104,6 +105,8 @@ export class GameEventsService extends EventEmitter {
       //   return;
       // }
 
+      registerDevourGameListeners(gameId);
+
       this.emit('log', 'gep: register game-detected', gameId, name, gameInfo);
       e.enable();
       this.activeGame = gameId;
@@ -116,6 +119,7 @@ export class GameEventsService extends EventEmitter {
     // from the gep api
     //@ts-ignore
     this.gepApi.on('game-exit',(e, gameId, processName, pid) => {
+      registerDevourGameListeners(undefined);
       console.log('gep game exit', gameId, processName, pid);
     });
 

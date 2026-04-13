@@ -4,6 +4,7 @@ import path from "path";
 import {mainApp} from "../browser";
 import {eventBusInstance} from "../browser/services/eventBus.service";
 import AppUpdater, { autoUpdater } from "./updater";
+import {archiveLogsAndUpload} from "./logs";
 
 // save a reference to the Tray object globally to avoid garbage collection
 let tray: Tray | null = null;
@@ -17,13 +18,28 @@ export function refreshTrayMenu() {
 		{
 			label: "Help",
 			click: () => {
-				const win = new BrowserWindow({ width: 400, height: 400, show: true });
+				const win = new BrowserWindow({ width: 480, height: 640, show: true });
 
 				// Load a remote URL
 				const url = "https://devourplay.gg/external/help";
 				win.loadURL(url);
 				// void shell.openExternal(url);
 			},
+		},
+		{
+			label: "Help",
+			click: () => {
+				const win = new BrowserWindow({ width: 480, height: 640, show: true });
+
+				// Load a remote URL
+				const url = "https://devourplay.gg/external/help";
+				win.loadURL(url);
+				// void shell.openExternal(url);
+			},
+		},
+		{
+			label: "Archive Logs",
+			click: archiveLogsAndUpload,
 		},
 		{
 			label: "Debug",
