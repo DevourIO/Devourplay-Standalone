@@ -42,10 +42,12 @@
       "*.exe"
     ],
     "copyright": "Copyright 2026 Devour Next Inc.",
-    "publish": [{
-      "provider": "github",
-      "private": false
-    }],
+    "publish": [
+      {
+        "provider": "github",
+        "private": false
+      }
+    ],
     "win": {
       "target": [
         {
@@ -82,9 +84,11 @@
     "@overwolf/ow-electron": "latest",
     "@overwolf/ow-electron-builder": "latest",
     "@overwolf/ow-electron-packages-types": "^0.0.5",
+    "@types/adm-zip": "^0.5.8",
     "@types/jquery": "^3.5.16",
     "@types/jsonwebtoken": "^9.0.1",
     "@types/node": "^18.11.18",
+    "adm-zip": "^0.5.17",
     "copy-webpack-plugin": "^11.0.0",
     "electron": "41.0.3",
     "electron-updater": "^6.8.3",

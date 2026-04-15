@@ -1,18 +1,18 @@
-import { dialog, BrowserWindow, app } from "electron";
+import { BrowserWindow, app, Notification } from "electron";
 import { exec } from 'child_process';
 import { autoUpdater } from "electron-updater";
 import {eventBusInstance} from "../browser/services/eventBus.service";
 
 
 class AppUpdater {
-	private mainWindow: BrowserWindow | null;
+	// private mainWindow: BrowserWindow | null;
 	// private updateCheckInterval: NodeJS.Timeout | null = null;
 	// private readonly CHECK_INTERVAL_MS = 60 * 1000 * 60; // 60 minutes
 
 	constructor() {
 		// 1. Basic Configuration
 		autoUpdater.autoDownload = true;
-		autoUpdater.autoInstallOnAppQuit = true;
+		autoUpdater.autoInstallOnAppQuit = false;
 
 		eventBusInstance.emit("log",`Get Feed URL: ${autoUpdater.getFeedURL()}`);
 
@@ -22,7 +22,7 @@ class AppUpdater {
 		if (app.isPackaged) {
 			eventBusInstance.emit("log","[Updater] Updates are enabled");
 
-			autoUpdater.checkForUpdatesAndNotify();
+			autoUpdater.checkForUpdates();
 
 			/*
 			 * Set up periodic checks every 4 hours
@@ -54,21 +54,21 @@ class AppUpdater {
 		}
 	}
 
-	setMainWindow(mainWindow: BrowserWindow | null): void {
-		this.mainWindow = mainWindow;
-	}
-
 	private initializeEvents(): void {
 		// This library gives you great progress tracking
 		// Note: flag will be cleared by the NSIS script after update
-		autoUpdater.on("download-progress", (progressObj) => {
-			eventBusInstance.emit("log",`Download speed: ${progressObj.bytesPerSecond} - ${progressObj.percent}%`);
-			if (this.mainWindow) {
-				eventBusInstance.emit("log",`Download speed: ${progressObj.bytesPerSecond} - ${progressObj.percent}%`);
-			}
-		});
+		// autoUpdater.on("download-progress", (progressObj) => {
+		// 	eventBusInstance.emit("log",`Download speed: ${progressObj.bytesPerSecond} - ${progressObj.percent}%`);
+		// 	if (this.mainWindow) {
+		// 		eventBusInstance.emit("log",`Download speed: ${progressObj.bytesPerSecond} - ${progressObj.percent}%`);
+		// 	}
+		// });
 
 		autoUpdater.on("update-available", (info) => {
+			new Notification({
+				title: `DevourPlay Updating`,
+				body: `DevourPlay has a new update. v${info.version} is downloading and will be installed automatically when it's ready.`,
+			}).show()
 			eventBusInstance.emit("log",`[Updater] Update available: ${JSON.stringify(info)}`);
 		});
 
@@ -76,19 +76,20 @@ class AppUpdater {
 			// Set the update flag before showing dialog
 			this.setUpdateFlag(true);
 
-			const dialogOpts = {
-				type: "info" as const,
-				buttons: ["Install now", "Install when I close the app"],
-				title: "Application Update",
-				message: `Version ${info.version} is ready!`,
-				detail: "A new version has been downloaded. Restart the application to apply the updates.",
-			};
+			// Deploy update immediately
+			autoUpdater.quitAndInstall(true, true);
 
-			if (this.mainWindow) {
-				dialog.showMessageBox(this.mainWindow, dialogOpts).then((returnValue) => {
-					if (returnValue.response === 0) autoUpdater.quitAndInstall(true, true);
-				});
-			}
+			// const dialogOpts: MessageBoxOptions = {
+			// 	type: "info",
+			// 	buttons: ["Install now", "Install when I close the app"],
+			// 	title: "DevourPlay Update",
+			// 	message: `Version ${info.version} is ready!`,
+			// 	detail: "A new version of DevourPlay has been downloaded. Restart the application to apply the updates.",
+			// };
+			//
+			// dialog.showMessageBox(undefined, dialogOpts).then((returnValue) => {
+			// 	if (returnValue.response === 0) autoUpdater.quitAndInstall(true, true);
+			// });
 		});
 
 		autoUpdater.on("error", (err: Error) => {
@@ -105,5 +106,3 @@ class AppUpdater {
 }
 
 export default AppUpdater;
-
-export { autoUpdater };

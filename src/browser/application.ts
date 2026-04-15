@@ -7,6 +7,7 @@ import { GameEventsService } from './services/gep.service';
 import {eventBusInstance, EventBusService} from "./services/eventBus.service";
 import {rotateLogs, writeLog} from "../utils/logs";
 import {LoginWindowController} from "./controllers/login-window.controller";
+import AppUpdater from "../utils/updater";
 
 export class Application {
 	constructor(
@@ -55,6 +56,7 @@ export class Application {
 	}
 
 	private initialize() {
+		new AppUpdater();
 	}
 
 	public showMainWindow() {

@@ -3,18 +3,19 @@ import {devourIsLoggedIn, devourUnauthUser} from "@devour/overwolf-sdk";
 import path from "path";
 import {mainApp} from "../browser";
 import {eventBusInstance} from "../browser/services/eventBus.service";
-import AppUpdater, { autoUpdater } from "./updater";
+import { autoUpdater } from "electron-updater";
 import {archiveLogsAndUpload} from "./logs";
 
 // save a reference to the Tray object globally to avoid garbage collection
 let tray: Tray | null = null;
 let isQuitting: boolean = false;
 
-const appUpdater: AppUpdater | null = new AppUpdater();
-
 export function refreshTrayMenu() {
 	if (!tray) return; // Don't create a new tray if it doesn't exist
 	const contextMenu = Menu.buildFromTemplate([
+		{
+			label: `Version ${ElectronApp.getVersion()}`,
+		},
 		{
 			label: "Help",
 			click: () => {
@@ -64,9 +65,7 @@ export function refreshTrayMenu() {
 		{
 			label: "Check for Updates...",
 			click: () => {
-				if (appUpdater) {
-					void autoUpdater.checkForUpdatesAndNotify();
-				}
+				void autoUpdater.checkForUpdates();
 			},
 		},
 		{
