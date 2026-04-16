@@ -1,62 +1,45 @@
-# ow-electron-packages-sample
+# DevourPlay
 
-A basic sample app, demonstrating how [@overwolf/ow-electron](https://npmjs.com/package/@overwolf/ow-electron) packages (Overlay, Game Events) work.
+This is the lite version of the DevourPlay Electron app. It starts minimized and is only accessible from the taskbar.
 
-For more details about ow-electron, as well as how to fully utilize it, please refer to the official [documentation](https://overwolf.github.io/tools/ow-electron).
+Development Readme: https://github.com/overwolf/ow-electron-packages-sample
 
-## Setup
+## Project Build Prerequisites
 
-To set up this app, you must first install its dependencies (using [yarn](https://yarnpkg.com/), [npm](https://www.npmjs.com/), or any other package manager).
+- **Azure CLI:** `brew install azure-cli`
+- **Java:** `brew install --cask temurin`
+- **Environment Variables:** These are for signing and deploying the build.
+  These need to be accessible by your terminal, so set them in ~/.zshrc or somewhere your CLI can source.
+  Run `printenv` to verify they are set and accessible. 
+  ```
+  # Generate at https://github.com/settings/tokens with the write:packages permission.
+  export GH_TOKEN=""
+  
+  # Get from Azure portal
+  export AZURE_TENANT_ID=""
+  export AZURE_CLIENT_ID=""
+  export AZURE_CLIENT_SECRET=""
 
-From there, you can easily run/interact with it.
+  export TRUSTED_SIGNING_ENDPOINT="https://wus.codesigning.azure.net"
+  export TRUSTED_SIGNING_ACCOUNT="DevourPlay"
+  export TRUSTED_SIGNING_CERT_PROFILE="DevourPlay-Windows"
+  ```
 
-## Quick start 
+## Basic Testing on Mac
 
-To run the app in development mode, simply run the `build` script, followed by the `start` script from the package.json.  
-For example:
+1. `npm run build:start`
 
-```shell
-# Using npm
-npm run build
-npm run start
+## Testing on Windows
 
-# Using yarn
-yarn build
-yarn start
-```
+1. `npm run build:dev`
+2. Transfer to Windows:
+   - build/win-unpacked folder for the portable version.
+   - build/DevourPlay-Setup-*.*.*.exe for the installable.
+3. (Optional) After installation, run the executable using command line to view console logs. 
+   `C:\Users\User\AppData\Local\Programs\DevourPlay\DevourPlay.exe --remote-debugging-port=8315`
 
-### VSCode launch.json
+## Production Deployment
 
-This repository also includes a working `.vscode/launch.json` file, meaning that you can launch the app by simply clicking `F5` on your keyboard (for default vscode settings).
-
-## Quick Build
-
-To build the app for production, you must run the `build` script, followed by the `build:ow-electron` script from the package.json.  
-For example:
-
-```shell
-# Using npm
-npm run build
-npm run build:ow-electron
-
-# Using yarn
-yarn build
-yarn build:ow-electron
-```
-
-## Working with ow-electron packages
-
-In order to add more/remove certain ow-electron "packages" from the project, simply edit the `overwolf.packages` array in the [package.json](/package.json) file, like so:
-
-```json
-{
-  ...
-  "overwolf": {
-    "packages": [
-      "gep",
-      "overlay"
-    ]
-  },
-  ...
-}
-```
+1. Ensure the version in package.json is correct.
+2. `npm run publish:release`
+3. Go to https://github.com/DevourIO/Devourplay-Standalone/releases Test and publish the release.

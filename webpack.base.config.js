@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
   mode: 'development',
@@ -23,7 +24,11 @@ module.exports = {
     filename: '[name]/[name].js',
   },
 
-  plugins: [],
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.DISABLE_UPDATES': JSON.stringify(process.env.DISABLE_UPDATES || 'false'),
+    }),
+  ],
   externals: {
     bufferutil: 'bufferutil',
     'utf-8-validate': 'utf-8-validate',
