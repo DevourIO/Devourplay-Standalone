@@ -57,4 +57,15 @@ contextBridge.exposeInMainWorld('overlay', {
   }
 });
 
+contextBridge.exposeInMainWorld('settings', {
+
+  getInitialSettings: () => {
+    return ipcRenderer.invoke('get-initial-settings');
+  },
+
+  toggleAutoStart: () => {
+    return ipcRenderer.invoke('toggle-auto-start');
+  },
+
+});
 

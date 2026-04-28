@@ -38,6 +38,10 @@
 
     proceed_uninstall:
         DetailPrint "Manual uninstall detected - performing full cleanup"
+        
+        ; Disable auto-start before cleaning up files
+        ExecWait '"$INSTDIR\DevourPlay.exe" --uninstall-cleanup --quit'
+        
         RMDir /r "$APPDATA\devour"
         ExecShell "open" "https://google.com"
 

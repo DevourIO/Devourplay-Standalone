@@ -13,6 +13,8 @@ import {closeLog} from "../utils/logs";
 import "../utils/deeplink";
 import "../utils/tray";
 import {LoginWindowController} from "./controllers/login-window.controller";
+import {SettingsWindowController} from "./controllers/settings-window.controller";
+import {getAppSettings} from "../utils/appSettings";
 
 const devourPublicKey = "69bb057e5b9b2b890cffd3e4";
 
@@ -39,6 +41,7 @@ const bootstrap = (): Application => {
 	);
 
 	const loginWindowController = new LoginWindowController();
+	const settingsWindowController = new SettingsWindowController();
 
 	setupDevour({
 		publicKey: devourPublicKey,
@@ -50,15 +53,43 @@ const bootstrap = (): Application => {
 		gepService,
 		mainWindowController,
 		loginWindowController,
+		settingsWindowController,
 		eventBusInstance,
 	);
 }
 
 export const mainApp = bootstrap();
 
-ElectronApp.whenReady().then(() => {
-	mainApp.run();
 
+// In your main process initialization
+function handleCommandLineArgs() {
+	const args = process.argv;
+
+	if (args.includes('--uninstall-cleanup')) {
+		const appSettings = getAppSettings();
+
+		if (appSettings.autoStartOnLogin) {
+			// Disable auto-start
+			ElectronApp.setLoginItemSettings({
+				openAtLogin: false,
+			});
+		}
+
+		if (args.includes('--quit')) {
+			ElectronApp.quit();
+		}
+		return true; // Indicates this was a cleanup operation
+	}
+
+	return false;
+}
+
+ElectronApp.whenReady().then(() => {
+	if (handleCommandLineArgs()) {
+		return; // Don't continue with normal app startup
+	}
+
+	mainApp.run();
 });
 
 ElectronApp.on('before-quit', (event) => {

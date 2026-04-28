@@ -1,6 +1,6 @@
 {
   "name": "DevourPlay",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "DevourPlay – Play, earn, & unlock rewards while you game.",
   "main": "dist/browser/index.js",
   "author": {

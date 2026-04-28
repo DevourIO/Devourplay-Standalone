@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Settings</title>
+    <style>
+        .button {
+            background-color: #d2d2d2;
+            width: 200px;
+            height: 100px;
+            border-radius: 200px;
+            cursor: pointer;
+            position: relative;
+            transition: 0.2s;
+            display: block;
+        }
+
+        .button::before {
+            position: absolute;
+            content: '';
+            background-color: #fff;
+            width: 90px;
+            height: 90px;
+            border-radius: 200px;
+            margin: 5px;
+            transition: 0.2s;
+        }
+
+        input[type=checkbox] {
+            display: none;
+        }
+
+        input[type=checkbox]:checked + .button {
+            background-color: #20096d;
+        }
+
+        input[type=checkbox]:checked + .button::before {
+            transform: translateX(100px);
+        }
+    </style>
+</head>
+
+<body>
+<div class="row">
+
+    <div class="row">
+        <div class="span11">
+            Auto Start on Login:
+        </div>
+        <div class="span1">
+            <div class="container">
+                <input type="checkbox" id="auto-start-on-login">
+                <label for="auto-start-on-login" class="button"></label>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script defer src="settings.js"></script>
+</body>
+</html>
+

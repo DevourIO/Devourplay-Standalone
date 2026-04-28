@@ -8,6 +8,7 @@ import {eventBusInstance, EventBusService} from "./services/eventBus.service";
 import {rotateLogs, writeLog} from "../utils/logs";
 import {LoginWindowController} from "./controllers/login-window.controller";
 import AppUpdater from "../utils/updater";
+import {SettingsWindowController} from "./controllers/settings-window.controller";
 
 export class Application {
 	constructor(
@@ -15,6 +16,7 @@ export class Application {
 		private readonly gepService: GameEventsService,
 		private readonly mainWindowController: MainWindowController,
 		private readonly loginWindowController: LoginWindowController,
+		private readonly settingsWindowController: SettingsWindowController,
 		private readonly eventBusService: EventBusService,
 	) {
 
@@ -62,6 +64,10 @@ export class Application {
 	public showMainWindow() {
 		const showDevTools = true;
 		this.mainWindowController.createAndShow(showDevTools);
+	}
+
+	public showSettingsWindow() {
+		this.settingsWindowController.createAndShow();
 	}
 
 	public showLoginWindow() {

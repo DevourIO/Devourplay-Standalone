@@ -28,14 +28,9 @@ export function refreshTrayMenu() {
 			},
 		},
 		{
-			label: "Help",
+			label: "Settings",
 			click: () => {
-				const win = new BrowserWindow({ width: 480, height: 640, show: true });
-
-				// Load a remote URL
-				const url = "https://devourplay.gg/external/help";
-				win.loadURL(url);
-				// void shell.openExternal(url);
+				mainApp.showSettingsWindow();
 			},
 		},
 		{

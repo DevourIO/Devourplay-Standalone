@@ -8,7 +8,8 @@ rendererConfig.target = 'electron-renderer';
 rendererConfig.entry = {
   'renderer': './src/renderer/renderer.ts',
   'preload': './src/preload/preload.ts',
-  'exclusive': './src/renderer/exclusive.ts'
+  'exclusive': './src/renderer/exclusive.ts',
+  'settings': './src/renderer/settings.ts',
 };
 
 rendererConfig.plugins.push(new HtmlWebpackPlugin({
@@ -29,6 +30,13 @@ rendererConfig.plugins.push(new HtmlWebpackPlugin({
   template: './src/renderer/exclusive.html',
   filename: path.join(__dirname, './dist/exclusive/exclusive.html'),
   chunks: ['exclusive'],
+  inject: false
+}));
+
+rendererConfig.plugins.push(new HtmlWebpackPlugin({
+  template: './src/renderer/settings.html',
+  filename: path.join(__dirname, './dist/settings/settings.html'),
+  chunks: ['settings'],
   inject: false
 }));
 
