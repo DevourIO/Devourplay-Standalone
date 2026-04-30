@@ -15,6 +15,7 @@ import "../utils/tray";
 import {LoginWindowController} from "./controllers/login-window.controller";
 import {SettingsWindowController} from "./controllers/settings-window.controller";
 import {getAppSettings} from "../utils/appSettings";
+import {NotificationsWindowController} from "./controllers/notifications-window.controller";
 
 const devourPublicKey = "69bb057e5b9b2b890cffd3e4";
 
@@ -42,6 +43,7 @@ const bootstrap = (): Application => {
 
 	const loginWindowController = new LoginWindowController();
 	const settingsWindowController = new SettingsWindowController();
+	const notificationsWindowController = new NotificationsWindowController(overlayService);
 
 	setupDevour({
 		publicKey: devourPublicKey,
@@ -54,6 +56,7 @@ const bootstrap = (): Application => {
 		mainWindowController,
 		loginWindowController,
 		settingsWindowController,
+		notificationsWindowController,
 		eventBusInstance,
 	);
 }

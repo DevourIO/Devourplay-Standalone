@@ -9,6 +9,7 @@ import {rotateLogs, writeLog} from "../utils/logs";
 import {LoginWindowController} from "./controllers/login-window.controller";
 import AppUpdater from "../utils/updater";
 import {SettingsWindowController} from "./controllers/settings-window.controller";
+import {NotificationsWindowController} from "./controllers/notifications-window.controller";
 
 export class Application {
 	constructor(
@@ -17,6 +18,7 @@ export class Application {
 		private readonly mainWindowController: MainWindowController,
 		private readonly loginWindowController: LoginWindowController,
 		private readonly settingsWindowController: SettingsWindowController,
+		private readonly notificationsWindowController: NotificationsWindowController,
 		private readonly eventBusService: EventBusService,
 	) {
 
@@ -70,6 +72,10 @@ export class Application {
 		this.settingsWindowController.createAndShow();
 	}
 
+	public showNotificationWindow(message: string) {
+		this.notificationsWindowController.createAndShow(message);
+	}
+
 	public showLoginWindow() {
 		this.loginWindowController.createAndShow();
 	}
@@ -79,15 +85,25 @@ export class Application {
 	}
 
 	private onOverlayServiceReady() {
-		// Which games to support overlay for
-		this.overlayService.registerToGames([
-			kGameIds.AmericanTruckSimulator,
-			kGameIds.DiabloIV,
-			kGameIds.EuroTruckSimulator2,
-			kGameIds.LeagueofLegends,
-			kGameIds.LeagueofLegendsPBE,
-			kGameIds.RocketLeague,
-			kGameIds.TeamfightTactics,
-		]);
+		const thisOverlayService = this.overlayService;
+		fetch("https://game-events-status.overwolf.com/all_prod.json")
+			.then(response => response.json())
+			.then(data => {
+				const gameIds: number[] = data.map((item) => Number(item.game_id)).filter(Boolean);
+				thisOverlayService.registerToGames(gameIds);
+			})
+			.catch(err => {
+				// Which games to support overlay for
+				thisOverlayService.registerToGames([
+					kGameIds.AmericanTruckSimulator,
+					kGameIds.DiabloIV,
+					kGameIds.EuroTruckSimulator2,
+					kGameIds.LeagueofLegends,
+					kGameIds.LeagueofLegendsPBE,
+					kGameIds.RocketLeague,
+					kGameIds.TeamfightTactics,
+				]);
+			});
+
 	}
 }

@@ -69,3 +69,17 @@ contextBridge.exposeInMainWorld('settings', {
 
 });
 
+contextBridge.exposeInMainWorld('notifications', {
+
+  onMessage: (callback) => {
+    ipcRenderer.on('notification-message', (event, ...args) => {
+      callback(...args);
+    });
+  },
+
+  devtools: () => {
+    return ipcRenderer.invoke('devtools');
+  },
+
+});
+

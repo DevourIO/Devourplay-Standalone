@@ -27,6 +27,12 @@ rendererConfig.plugins.push(new HtmlWebpackPlugin({
 }));
 
 rendererConfig.plugins.push(new HtmlWebpackPlugin({
+  template: './src/renderer/notification.html',
+  filename: path.join(__dirname, './dist/renderer/notification.html'),
+  inject: false
+}));
+
+rendererConfig.plugins.push(new HtmlWebpackPlugin({
   template: './src/renderer/exclusive.html',
   filename: path.join(__dirname, './dist/exclusive/exclusive.html'),
   chunks: ['exclusive'],
