@@ -71,13 +71,20 @@ contextBridge.exposeInMainWorld('settings', {
 
 contextBridge.exposeInMainWorld('notifications', {
 
+  onOverlayMessage: (callback) => {
+    ipcRenderer.on('notification-overlay', (event, ...args) => {
+      callback(...args);
+    });
+  },
+
   onMessage: (callback) => {
     ipcRenderer.on('notification-message', (event, ...args) => {
       callback(...args);
     });
   },
 
-  devtools: () => {
+  openDevtools: () => {
+    console.log("expose devtools")
     return ipcRenderer.invoke('devtools');
   },
 

@@ -9,16 +9,16 @@ import {rotateLogs, writeLog} from "../utils/logs";
 import {LoginWindowController} from "./controllers/login-window.controller";
 import AppUpdater from "../utils/updater";
 import {SettingsWindowController} from "./controllers/settings-window.controller";
-import {NotificationsWindowController} from "./controllers/notifications-window.controller";
+import {WebsocketService} from "./services/websocket.service";
 
 export class Application {
 	constructor(
 		private readonly overlayService: OverlayService,
 		private readonly gepService: GameEventsService,
+		private readonly websocketService: WebsocketService,
 		private readonly mainWindowController: MainWindowController,
 		private readonly loginWindowController: LoginWindowController,
 		private readonly settingsWindowController: SettingsWindowController,
-		private readonly notificationsWindowController: NotificationsWindowController,
 		private readonly eventBusService: EventBusService,
 	) {
 
@@ -53,6 +53,7 @@ export class Application {
 		gepService.on('log', writeLog);
 		overlayService.on('log', writeLog);
 		eventBusService.on('log', writeLog);
+		websocketService.on('log', writeLog);
 	}
 
 	public run() {
@@ -70,10 +71,6 @@ export class Application {
 
 	public showSettingsWindow() {
 		this.settingsWindowController.createAndShow();
-	}
-
-	public showNotificationWindow(message: string) {
-		this.notificationsWindowController.createAndShow(message);
 	}
 
 	public showLoginWindow() {

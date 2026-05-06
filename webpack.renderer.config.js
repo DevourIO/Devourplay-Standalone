@@ -33,6 +33,12 @@ rendererConfig.plugins.push(new HtmlWebpackPlugin({
 }));
 
 rendererConfig.plugins.push(new HtmlWebpackPlugin({
+  template: './src/renderer/notification-overlay.html',
+  filename: path.join(__dirname, './dist/renderer/notification-overlay.html'),
+  inject: false
+}));
+
+rendererConfig.plugins.push(new HtmlWebpackPlugin({
   template: './src/renderer/exclusive.html',
   filename: path.join(__dirname, './dist/exclusive/exclusive.html'),
   chunks: ['exclusive'],

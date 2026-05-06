@@ -9,13 +9,13 @@ import {OverlayInputService} from './services/overlay-input.service';
 import {setupDevour} from "@devour/overwolf-sdk";
 import {eventBusInstance} from "./services/eventBus.service";
 import {closeLog} from "../utils/logs";
-
-import "../utils/deeplink";
-import "../utils/tray";
 import {LoginWindowController} from "./controllers/login-window.controller";
 import {SettingsWindowController} from "./controllers/settings-window.controller";
 import {getAppSettings} from "../utils/appSettings";
 import {NotificationsWindowController} from "./controllers/notifications-window.controller";
+import {WebsocketService} from "./services/websocket.service";
+import {initializeDeepLink} from "../utils/deeplink";
+import {initializeTray} from "../utils/tray";
 
 const devourPublicKey = "69bb057e5b9b2b890cffd3e4";
 
@@ -27,6 +27,7 @@ const bootstrap = (): Application => {
 	const overlayHotkeysService = new OverlayHotkeysService(overlayService);
 	const gepService = new GameEventsService();
 	const inputService = new OverlayInputService(overlayService);
+	const websocketService = new WebsocketService("https://develop-mirror2.backend-socket.devourgo.io");
 
 	const createDemoOsrWindowControllerFactory = (): DemoOSRWindowController => {
 		return new DemoOSRWindowController(overlayService);
@@ -38,12 +39,13 @@ const bootstrap = (): Application => {
 		createDemoOsrWindowControllerFactory,
 		overlayHotkeysService,
 		inputService,
+		websocketService,
 		eventBusInstance,
 	);
 
 	const loginWindowController = new LoginWindowController();
 	const settingsWindowController = new SettingsWindowController();
-	const notificationsWindowController = new NotificationsWindowController(overlayService);
+	new NotificationsWindowController(overlayService, websocketService);
 
 	setupDevour({
 		publicKey: devourPublicKey,
@@ -53,10 +55,10 @@ const bootstrap = (): Application => {
 	return new Application(
 		overlayService,
 		gepService,
+		websocketService,
 		mainWindowController,
 		loginWindowController,
 		settingsWindowController,
-		notificationsWindowController,
 		eventBusInstance,
 	);
 }
@@ -99,3 +101,6 @@ ElectronApp.on('before-quit', (event) => {
 	eventBusInstance.emit("log", "App is quitting, running cleanup...");
 	closeLog();
 });
+
+initializeDeepLink();
+initializeTray();

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style>
+        body {
+            background-color: rgba(43, 49, 49, 0.68);
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            color: aliceblue;
+            user-select: none;
+        }
+
+        #title-bar {
+            height: 30px;
+            background-color: #333;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+
+        #title-bar .buttons {
+            display: flex;
+        }
+
+        #title-bar .button {
+            width: 15px;
+            height: 15px;
+            margin: 0 3px;
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+        #title-bar .button:hover {
+          background-color: #ddd;
+        }
+
+    </style>
+    <title>Notification Window</title>
+</head>
+
+<body>
+    <div id="title-bar">
+        <div class="title">DevourPlay</div>
+        <div class="buttons">
+            <div class="button" id="close">&#x2715;</div>
+        </div>
+    </div>
+    <div>
+        <button id="devtools">Devtool</button>
+
+        <div id="notification-text">Init</div>
+    </div>
+    <script>
+
+		const devtoolsButton = document.getElementById("devtools")
+		devtoolsButton.addEventListener("click", () => {
+			window.notifications.openDevtools();
+		})
+
+		const close = document.getElementById("close");
+		close.addEventListener("click", () => {
+			window.close();
+		});
+
+		const notificationText = document.getElementById('notification-text');
+		window.notifications.onOverlayMessage((data) => {
+			notificationText.innerText = data.toString();
+		});
+
+    </script>
+</body>
+
+</html>

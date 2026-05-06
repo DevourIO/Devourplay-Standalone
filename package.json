@@ -1,6 +1,6 @@
 {
   "name": "DevourPlay",
-  "version": "0.1.5",
+  "version": "0.1.17",
   "description": "DevourPlay – Play, earn, & unlock rewards while you game.",
   "main": "dist/browser/index.js",
   "author": {
@@ -107,6 +107,7 @@
     "wrapper-webpack-plugin": "^2.1.0"
   },
   "dependencies": {
-    "@devour/overwolf-sdk": "file:../overwolf-sdk"
+    "@devour/overwolf-sdk": "file:../overwolf-sdk",
+    "socket.io-client": "^4.8.3"
   }
 }

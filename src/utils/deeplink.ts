@@ -21,33 +21,35 @@ async function handleDeeplink(urlString: string) {
 
 }
 
-if (process.defaultApp) {
-	if (process.argv.length >= 2) {
-		ElectronApp.setAsDefaultProtocolClient('devourplay', process.execPath, [path.resolve(process.argv[1])]);
+export const initializeDeepLink = () => {
+	if (process.defaultApp) {
+		if (process.argv.length >= 2) {
+			ElectronApp.setAsDefaultProtocolClient('devourplay', process.execPath, [path.resolve(process.argv[1])]);
+		}
+	} else {
+		ElectronApp.setAsDefaultProtocolClient('devourplay');
 	}
-} else {
-	ElectronApp.setAsDefaultProtocolClient('devourplay');
-}
 
-ElectronApp.on("open-url", (event, url) => {
-	// Keep this console log. Deep link does not seem to trigger without it?
-	eventBusInstance.emit("log", `Deeplink URL opened ${url.substring(0, 25)}...` );
-	void handleDeeplink(url);
-});
-
-const gotTheLock = ElectronApp.requestSingleInstanceLock();
-
-if (!gotTheLock) {
-	ElectronApp.quit();
-} else {
-	ElectronApp.on("second-instance", (event, commands, workingDir) => {
-		void handleDeeplink(commands.pop());
+	ElectronApp.on("open-url", (event, url) => {
+		// Keep this console log. Deep link does not seem to trigger without it?
+		eventBusInstance.emit("log", `Deeplink URL opened ${url.substring(0, 25)}...` );
+		void handleDeeplink(url);
 	});
-}
 
-ElectronApp.whenReady().then(() => {
-  const customUrl = process.argv.find(item => item.startsWith("devourplay://"));
-  if (customUrl) {
-    void handleDeeplink(customUrl);
-  }
-});
+	const gotTheLock = ElectronApp.requestSingleInstanceLock();
+
+	if (!gotTheLock) {
+		ElectronApp.quit();
+	} else {
+		ElectronApp.on("second-instance", (event, commands, workingDir) => {
+			void handleDeeplink(commands.pop());
+		});
+	}
+
+	ElectronApp.whenReady().then(() => {
+	  const customUrl = process.argv.find(item => item.startsWith("devourplay://"));
+	  if (customUrl) {
+		void handleDeeplink(customUrl);
+	  }
+	});
+};

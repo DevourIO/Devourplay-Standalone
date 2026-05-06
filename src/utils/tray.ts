@@ -74,17 +74,20 @@ export function refreshTrayMenu() {
 	tray.setContextMenu(contextMenu);
 }
 
-// The Tray can only be instantiated after the 'ready' event is fired
-ElectronApp.whenReady().then(() => {
-	const trayIcon = nativeImage.createFromPath(path.join(__dirname, "../assets/images/icon.png"));
-	tray = new Tray(trayIcon.resize({width: 16, height: 16}));
-	refreshTrayMenu();
-})
+export const initializeTray = () => {
 
-ElectronApp.on('window-all-closed', () => {
-	if (process.platform !== 'darwin' && isQuitting) {
-		ElectronApp.quit();
-	}
-});
+	// The Tray can only be instantiated after the 'ready' event is fired
+	ElectronApp.whenReady().then(() => {
+		const trayIcon = nativeImage.createFromPath(path.join(__dirname, "../assets/images/icon.png"));
+		tray = new Tray(trayIcon.resize({width: 16, height: 16}));
+		refreshTrayMenu();
+	})
 
+	ElectronApp.on('window-all-closed', () => {
+		if (process.platform !== 'darwin' && isQuitting) {
+			ElectronApp.quit();
+		}
+	});
+
+};
 
