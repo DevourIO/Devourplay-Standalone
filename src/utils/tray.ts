@@ -1,14 +1,13 @@
 import {Menu, Tray, nativeImage, app as ElectronApp, BrowserWindow} from "electron";
 import {devourIsLoggedIn, devourUnauthUser} from "@devour/overwolf-sdk";
 import path from "path";
-import {mainApp} from "../browser";
+import {isQuitting, mainApp, setIsQuitting} from "../browser";
 import {eventBusInstance} from "../browser/services/eventBus.service";
 import { autoUpdater } from "electron-updater";
 import {archiveLogsAndUpload} from "./logs";
 
 // save a reference to the Tray object globally to avoid garbage collection
 let tray: Tray | null = null;
-let isQuitting: boolean = false;
 
 export function refreshTrayMenu() {
 	if (!tray) return; // Don't create a new tray if it doesn't exist
@@ -66,7 +65,7 @@ export function refreshTrayMenu() {
 		{
 			label: "Quit",
 			click: () => {
-				isQuitting = true;
+				setIsQuitting(true);
 				ElectronApp.quit();
 			},
 		},

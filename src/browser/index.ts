@@ -19,6 +19,11 @@ import {initializeTray} from "../utils/tray";
 
 const devourPublicKey = "69bb057e5b9b2b890cffd3e4";
 
+export let isQuitting: boolean = false;
+export function setIsQuitting(value: boolean) {
+	isQuitting = value;
+}
+
 /**
  * TODO: Integrate your own dependency-injection library
  */
@@ -98,6 +103,7 @@ ElectronApp.whenReady().then(() => {
 });
 
 ElectronApp.on('before-quit', (event) => {
+	isQuitting = true;
 	eventBusInstance.emit("log", "App is quitting, running cleanup...");
 	closeLog();
 });

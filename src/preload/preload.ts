@@ -84,7 +84,6 @@ contextBridge.exposeInMainWorld('notifications', {
   },
 
   openDevtools: () => {
-    console.log("expose devtools")
     return ipcRenderer.invoke('devtools');
   },
 

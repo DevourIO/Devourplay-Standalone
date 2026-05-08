@@ -1,11 +1,13 @@
-import {BrowserWindow, ipcMain} from "electron";
+import {app as ElectronApp, BrowserWindow, ipcMain} from "electron";
 import path from 'path';
 import {OverlayBrowserWindow, OverlayWindowOptions, PassthroughType} from "@overwolf/ow-electron-packages-types";
 import {OverlayService} from "../services/overlay.service";
 import {devourIsLoggedIn} from "@devour/overwolf-sdk";
 import {WebsocketService} from "../services/websocket.service";
+import {isQuitting} from "../index";
 
 export interface NotificationsStandalone {
+	title: string;
 	message: string;
 }
 
@@ -29,6 +31,36 @@ export class NotificationsWindowController {
 		this.registerListeners();
 		overlayService.on('ready', this.registerOverlayListeners.bind(this));
 		this.registerToIpc();
+
+		ElectronApp.whenReady().then(() => {
+			this.browserWindow = new BrowserWindow({
+				width: 480,
+				height: 640,
+				show: false,
+				webPreferences: {
+					// NOTE: nodeIntegration and contextIsolation are only required for this
+					// specific demo app, they are not a neceassry requirement for any other
+					// ow-electron applications
+					nodeIntegration: true,
+					contextIsolation: true,
+					devTools: true,
+					// relative to root folder of the project
+					preload: path.join(__dirname, '../preload/preload.js'),
+				},
+			});
+			this.browserWindow.loadURL("https://develop-mirror2.web.devourgo.io/external/info");
+			this.browserWindow.on('close', (event) => {
+				if (!isQuitting) {
+					// Prevent the window from actually closing
+					event.preventDefault();
+
+					// Hide it instead
+					this.browserWindow.hide();
+				}
+			});
+		});
+
+
 	}
 
 	private registerListeners() {
@@ -115,30 +147,8 @@ export class NotificationsWindowController {
 	 *
 	 */
 	public createAndShow(data: NotificationsStandalone) {
-		// If window already exists, just focus it instead of creating a new one
-		if (this.browserWindow && !this.browserWindow.isDestroyed()) {
-			this.focusWindow();
-			return;
-		}
-
-		this.browserWindow = new BrowserWindow({
-			width: 640,
-			height: 480,
-			show: true,
-			webPreferences: {
-				// NOTE: nodeIntegration and contextIsolation are only required for this
-				// specific demo app, they are not a neceassry requirement for any other
-				// ow-electron applications
-				nodeIntegration: true,
-				contextIsolation: true,
-				devTools: true,
-				// relative to root folder of the project
-				preload: path.join(__dirname, '../preload/preload.js'),
-			},
-		});
-
-		this.browserWindow.loadFile(path.join(__dirname, '../renderer/notification.html'));
 		this.browserWindow.webContents?.send('notification-message', data);
+		this.focusWindow();
 	}
 
 	public focusWindow() {
@@ -159,7 +169,7 @@ export class NotificationsWindowController {
 	 *
 	 */
 	private registerToIpc() {
-		ipcMain.handle('devtools', async () => {
+		ipcMain.handle('devtools', () => {
 			if (this.overlayWindow?.window && !this.overlayWindow?.window.isDestroyed()) {
 				this.overlayWindow?.window.webContents.openDevTools({mode: 'detach'});
 			}
