@@ -2,7 +2,7 @@ import {app as ElectronApp, BrowserWindow, ipcMain} from "electron";
 import path from 'path';
 import {OverlayBrowserWindow, OverlayWindowOptions, PassthroughType} from "@overwolf/ow-electron-packages-types";
 import {OverlayService} from "../services/overlay.service";
-import {devourIsLoggedIn} from "@devour/overwolf-sdk";
+import {devourIsLoggedIn, getDevourFrontendDomain} from "@devour/overwolf-sdk";
 import {WebsocketService} from "../services/websocket.service";
 import {isQuitting} from "../index";
 
@@ -48,7 +48,7 @@ export class NotificationsWindowController {
 					preload: path.join(__dirname, '../preload/preload.js'),
 				},
 			});
-			this.browserWindow.loadURL("https://develop-mirror2.web.devourgo.io/external/info");
+			this.browserWindow.loadURL(`${getDevourFrontendDomain()}/external/info`);
 			this.browserWindow.on('close', (event) => {
 				if (!isQuitting) {
 					// Prevent the window from actually closing

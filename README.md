@@ -27,11 +27,11 @@ Development Readme: https://github.com/overwolf/ow-electron-packages-sample
 
 ## Basic Testing on Mac
 
-1. `npm run build:start`
+1. `TARGET_ENV={#} npm run build:start` See [target envs](#target-envs)
 
 ## Testing on Windows
 
-1. `npm run build:dev`
+1. `TARGET_ENV={#} npm run build:dev` See [target envs](#target-envs)
 2. Transfer to Windows:
    - build/win-unpacked folder for the portable version.
    - build/DevourPlay-Setup-*.*.*.exe for the installable.
@@ -43,3 +43,10 @@ Development Readme: https://github.com/overwolf/ow-electron-packages-sample
 1. Ensure the version in package.json is correct.
 2. `npm run publish:release`
 3. Go to https://github.com/DevourIO/Devourplay-Standalone/releases Test and publish the release.
+
+## Target Envs
+
+- `production` for production env. `npm run publish:release` will automatically use this.
+- Numeric values point to the associated mirror. `TARGET_ENV=2 npm run build:dev` will point to mirror 2.
+- `localhost` for localhost:8080 / localhost:8085
+- Undefined or 0 will point to non-mirrored develop environment.

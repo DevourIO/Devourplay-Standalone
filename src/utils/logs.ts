@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import AdmZip from "adm-zip";
 import {appData} from "./getAppDataPath";
+import {getDevourBackendDomain, getDevourState} from "@devour/overwolf-sdk";
 
 let stream: fs.WriteStream;
 
@@ -83,20 +84,9 @@ function archiveLogs() {
 	zip.writeZip(dirLogs + "/logs.zip");
 }
 
-const getDevourAuthKey = (): string => {
-	try {
-		const dirRoot = appData("devour");
-		const filePath = dirRoot + "/state.json";
-		const stateString = fs.readFileSync(filePath, "utf-8");
-		const devourState = JSON.parse(stateString);
-		return devourState.userAuthToken;
-	} catch {
-		return "";
-	}
-};
-
 export async function uploadLogs() {
-	const userAuthToken = getDevourAuthKey();
+	const devourState = getDevourState();
+	const userAuthToken = devourState.userAuthToken;
 	const filePath = dirLogs + "/logs.zip";
 	const fileBuffer = fs.readFileSync(filePath);
 
@@ -107,7 +97,7 @@ export async function uploadLogs() {
 		path.basename(filePath)
 	);
 
-	const response = await fetch("https://develop-mirror2.backend-rest.devourgo.io/devourplay/help-ticket", {
+	const response = await fetch(`${getDevourBackendDomain()}/devourplay/help-ticket`, {
 		method: "POST",
 		body: formData,
 		headers: {

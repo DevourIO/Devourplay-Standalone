@@ -1,6 +1,6 @@
 {
   "name": "DevourPlay",
-  "version": "0.1.17",
+  "version": "0.1.21",
   "description": "DevourPlay – Play, earn, & unlock rewards while you game.",
   "main": "dist/browser/index.js",
   "author": {
@@ -78,7 +78,7 @@
     "build:start": "npm run build && ow-electron . ",
     "start": "ow-electron .",
     "build:ow-electron": "ow-electron-builder --c.extraMetadata.name=GameEventsTester --publish=never -mwl",
-    "publish:release": "npm run build && ow-electron-builder --publish=always -w"
+    "publish:release": "TARGET_ENV=production npm run build && ow-electron-builder --publish=always -w"
   },
   "devDependencies": {
     "@overwolf/ow-electron": "latest",

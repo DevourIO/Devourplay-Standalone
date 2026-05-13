@@ -27,6 +27,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env.DISABLE_UPDATES': JSON.stringify(process.env.DISABLE_UPDATES || 'false'),
+      'process.env.TARGET_ENV': JSON.stringify(process.env.TARGET_ENV),
     }),
   ],
   externals: {

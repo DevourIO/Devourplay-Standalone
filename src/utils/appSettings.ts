@@ -1,5 +1,6 @@
 import fs from "fs";
 import {appData} from "./getAppDataPath";
+import {getDevourState} from "@devour/overwolf-sdk";
 
 export interface AppSettings {
 	autoStartOnLogin?: boolean;
@@ -8,7 +9,7 @@ export interface AppSettings {
 const dir = appData("devour");
 const filePath = `${dir}/config-standalone.json`;
 
-export function resetAppSettings() {
+function resetAppSettings() {
 	const defaultState: AppSettings = {
 		autoStartOnLogin: false,
 	};
@@ -39,4 +40,19 @@ export function setAppSettings(newSettings: Partial<AppSettings>) {
 
 	fs.writeFileSync(filePath, stateString);
 }
+
+export const getDevourWebsocketDomain = () => {
+	const state = getDevourState();
+	if (state.isProduction) {
+		return "https://production.backend-socket.devourplay.gg";
+	}
+	const mirror = state.mirror;
+	if (mirror === "localhost") {
+		return "http://localhost:8080";
+	} else if (mirror) {
+		return `https://develop-mirror${mirror}.backend-socket.devourplay.gg`;
+	}
+	return "https://develop.backend-socket.devourplay.gg";
+};
+
 

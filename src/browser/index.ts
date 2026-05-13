@@ -11,7 +11,7 @@ import {eventBusInstance} from "./services/eventBus.service";
 import {closeLog} from "../utils/logs";
 import {LoginWindowController} from "./controllers/login-window.controller";
 import {SettingsWindowController} from "./controllers/settings-window.controller";
-import {getAppSettings} from "../utils/appSettings";
+import {getAppSettings, getDevourWebsocketDomain} from "../utils/appSettings";
 import {NotificationsWindowController} from "./controllers/notifications-window.controller";
 import {WebsocketService} from "./services/websocket.service";
 import {initializeDeepLink} from "../utils/deeplink";
@@ -32,7 +32,7 @@ const bootstrap = (): Application => {
 	const overlayHotkeysService = new OverlayHotkeysService(overlayService);
 	const gepService = new GameEventsService();
 	const inputService = new OverlayInputService(overlayService);
-	const websocketService = new WebsocketService("https://develop-mirror2.backend-socket.devourgo.io");
+	const websocketService = new WebsocketService(getDevourWebsocketDomain());
 
 	const createDemoOsrWindowControllerFactory = (): DemoOSRWindowController => {
 		return new DemoOSRWindowController(overlayService);
@@ -55,6 +55,8 @@ const bootstrap = (): Application => {
 	setupDevour({
 		publicKey: devourPublicKey,
 		engine: "ELECTRON",
+		isProduction: process.env.TARGET_ENV === "production",
+		mirror: process.env.TARGET_ENV === "localhost" ? "localhost" : !isNaN(Number(process.env.TARGET_ENV)) ? Number(process.env.TARGET_ENV) : undefined,
 	});
 
 	return new Application(

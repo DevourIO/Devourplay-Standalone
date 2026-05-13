@@ -1,6 +1,7 @@
 import { BrowserWindow, session } from 'electron';
+import {getDevourFrontendDomain} from "@devour/overwolf-sdk";
 
-export const loginUrl = "https://develop-mirror2.web.devourgo.io/deeplink";
+export const loginUrl = `${getDevourFrontendDomain()}/deeplink`;
 
 /**
  *
