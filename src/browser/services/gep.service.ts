@@ -1,4 +1,4 @@
-import { app as electronApp } from 'electron';
+import { app as electronApp, screen, desktopCapturer, BrowserWindow } from 'electron';
 import { overwolf } from '@overwolf/ow-electron';
 import EventEmitter from 'events';
 import {
@@ -6,6 +6,8 @@ import {
   onInfoUpdatesListener,
   registerDevourGameListeners,
 } from "@devour/overwolf-sdk";
+import fs from 'fs';
+import path from 'path';
 
 const app = electronApp as overwolf.OverwolfApp;
 
@@ -18,12 +20,113 @@ export class GameEventsService extends EventEmitter {
   private gepApi: overwolf.packages.OverwolfGameEventPackage;
   private activeGame = 0;
   private gepGamesId: number[] = [];
+  private screenshotCount = 0;
 
   constructor() {
     super();
     this.registerOverwolfPackageManager();
+    this.ensureScreenshotDirectory();
   }
 
+  /**
+   * Ensure screenshot directory exists
+   */
+  private ensureScreenshotDirectory() {
+    const screenshotDir = path.join(app.getPath("home"), 'DevourPlay');
+    if (!fs.existsSync(screenshotDir)) {
+      fs.mkdirSync(screenshotDir, { recursive: true });
+    }
+  }
+
+  /**
+   * Take a screenshot of the primary display
+   */
+  private async takeGameScreenshot(eventData?: any) {
+    try {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `game_event_screenshot_${this.screenshotCount++}_${timestamp}.png`;
+      const screenshotPath = path.join(app.getPath("home"), 'DevourPlay', filename);
+
+      // Get all available screens
+      const sources = await desktopCapturer.getSources({
+        types: ['screen'],
+        thumbnailSize: { width: 1920, height: 1080 }
+      });
+
+      if (sources.length === 0) {
+        this.emit('log', 'No screens available for capture');
+        return;
+      }
+
+      // Use the primary screen (first one)
+      const primaryScreen = sources[0];
+      
+      // Convert the thumbnail to PNG buffer
+      const image = primaryScreen.thumbnail;
+      const buffer = image.toPNG();
+
+      // Save screenshot to file
+      fs.writeFileSync(screenshotPath, buffer);
+
+      this.emit('log', `Screenshot saved: ${screenshotPath}`, eventData);
+      this.emit('screenshot-taken', { 
+        path: screenshotPath, 
+        filename, 
+        eventData,
+        screenName: primaryScreen.name
+      });
+
+    } catch (error) {
+      this.emit('log', 'Error taking screenshot:', error);
+    }
+  }
+
+  /**
+   * Take a higher quality screenshot using a hidden window
+   */
+  private async takeHighQualityScreenshot(eventData?: any) {
+    try {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `game_event_hq_screenshot_${this.screenshotCount++}_${timestamp}.png`;
+      const screenshotPath = path.join(app.getPath("home"), 'DevourPlay', filename);
+
+      // Get screen dimensions
+      const primaryDisplay = screen.getPrimaryDisplay();
+      const { width, height } = primaryDisplay.workAreaSize;
+
+      // Create a hidden window for capturing
+      const captureWindow = new BrowserWindow({
+        show: false,
+        width,
+        height,
+        webPreferences: {
+          nodeIntegration: false,
+          contextIsolation: true
+        }
+      });
+
+      // Capture the screen
+      const image = await captureWindow.capturePage();
+      const buffer = image.toPNG();
+
+      // Save screenshot
+      fs.writeFileSync(screenshotPath, buffer);
+
+      // Clean up
+      captureWindow.close();
+
+      this.emit('log', `High quality screenshot saved: ${screenshotPath}`, eventData);
+      this.emit('screenshot-taken', { 
+        path: screenshotPath, 
+        filename, 
+        eventData,
+        quality: 'high'
+      });
+
+    } catch (error) {
+      this.emit('log', 'Error taking high quality screenshot:', error);
+    }
+  }
 
   /**
    *  for gep supported games goto:
@@ -145,6 +248,13 @@ export class GameEventsService extends EventEmitter {
     this.gepApi.on('new-game-event', (e, gameId, ...args) => {
       this.emit('log', 'new-event', gameId, ...args);
       onNewEventsListener(args[0]);
+      
+      // Take screenshot when GEP event is triggered
+      this.takeGameScreenshot({
+        gameId,
+        eventData: args[0],
+        timestamp: new Date().toISOString()
+      });
     });
 
     // If GEP encounters an error

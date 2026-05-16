@@ -9,8 +9,6 @@ import {
   IOverwolfOverlayApi,
   OverlayBrowserWindow,
   OverlayWindowOptions,
-  PassthroughType,
-  ZOrderType,
 } from '@overwolf/ow-electron-packages-types';
 import path from 'path';
 
@@ -104,8 +102,8 @@ export class OverlayInputService {
       height: height,
       width: width,
       show: true,
-      passthrough: PassthroughType.PassThrough,
-      zOrder: ZOrderType.BottomMost,
+      passthrough: "passThrough",
+      zOrder: "bottomMost",
       transparent: true,
       resizable: false,
       webPreferences: {

@@ -1,6 +1,6 @@
 import {app as ElectronApp, BrowserWindow, ipcMain} from "electron";
 import path from 'path';
-import {OverlayBrowserWindow, OverlayWindowOptions, PassthroughType} from "@overwolf/ow-electron-packages-types";
+import {OverlayBrowserWindow, OverlayWindowOptions} from "@overwolf/ow-electron-packages-types";
 import {OverlayService} from "../services/overlay.service";
 import {devourIsLoggedIn, getDevourFrontendDomain} from "@devour/overwolf-sdk";
 import {WebsocketService} from "../services/websocket.service";
@@ -115,7 +115,7 @@ export class NotificationsWindowController {
 			resizable: false, // resizable borders
 			x: 0,
 			y: 10,
-			passthrough: PassthroughType.PassThrough,
+			passthrough: "passThrough",
 			webPreferences: {
 				devTools: true,
 				nodeIntegration: true,

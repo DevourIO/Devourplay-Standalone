@@ -94,7 +94,6 @@ export class Application {
 				thisOverlayService.registerToGames([
 					kGameIds.AmericanTruckSimulator,
 					kGameIds.DiabloIV,
-					kGameIds.EuroTruckSimulator2,
 					kGameIds.LeagueofLegends,
 					kGameIds.LeagueofLegendsPBE,
 					kGameIds.RocketLeague,
