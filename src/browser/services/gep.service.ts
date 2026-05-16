@@ -49,7 +49,7 @@ export class GameEventsService extends EventEmitter {
 
       // Get all available screens
       const sources = await desktopCapturer.getSources({
-        types: ['screen'],
+        types: ['window'],
         thumbnailSize: { width: 1920, height: 1080 }
       });
 
@@ -58,11 +58,20 @@ export class GameEventsService extends EventEmitter {
         return;
       }
 
-      // Use the primary screen (first one)
-      const primaryScreen = sources[0];
+      // Find the game window by name or process
+      // You might need to adjust this logic based on your specific game
+      const gameWindow = sources.find(source =>
+          source.name.toLowerCase().includes('devour') || // Replace with your game name
+          source.name.toLowerCase().includes('game')
+      );
+
+      if (!gameWindow) {
+        this.emit('log', 'Game window not found among available windows');
+        return;
+      }
       
       // Convert the thumbnail to PNG buffer
-      const image = primaryScreen.thumbnail;
+      const image = gameWindow.thumbnail;
       const buffer = image.toPNG();
 
       // Save screenshot to file
@@ -73,58 +82,11 @@ export class GameEventsService extends EventEmitter {
         path: screenshotPath, 
         filename, 
         eventData,
-        screenName: primaryScreen.name
+        screenName: gameWindow.name
       });
 
     } catch (error) {
       this.emit('log', 'Error taking screenshot:', error);
-    }
-  }
-
-  /**
-   * Take a higher quality screenshot using a hidden window
-   */
-  private async takeHighQualityScreenshot(eventData?: any) {
-    try {
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `game_event_hq_screenshot_${this.screenshotCount++}_${timestamp}.png`;
-      const screenshotPath = path.join(app.getPath("home"), 'DevourPlay', filename);
-
-      // Get screen dimensions
-      const primaryDisplay = screen.getPrimaryDisplay();
-      const { width, height } = primaryDisplay.workAreaSize;
-
-      // Create a hidden window for capturing
-      const captureWindow = new BrowserWindow({
-        show: false,
-        width,
-        height,
-        webPreferences: {
-          nodeIntegration: false,
-          contextIsolation: true
-        }
-      });
-
-      // Capture the screen
-      const image = await captureWindow.capturePage();
-      const buffer = image.toPNG();
-
-      // Save screenshot
-      fs.writeFileSync(screenshotPath, buffer);
-
-      // Clean up
-      captureWindow.close();
-
-      this.emit('log', `High quality screenshot saved: ${screenshotPath}`, eventData);
-      this.emit('screenshot-taken', { 
-        path: screenshotPath, 
-        filename, 
-        eventData,
-        quality: 'high'
-      });
-
-    } catch (error) {
-      this.emit('log', 'Error taking high quality screenshot:', error);
     }
   }
 
