@@ -21,6 +21,7 @@ export class GameEventsService extends EventEmitter {
   private activeGame = 0;
   private gepGamesId: number[] = [];
   private screenshotCount = 0;
+  private processName: string;
 
   constructor() {
     super();
@@ -32,7 +33,7 @@ export class GameEventsService extends EventEmitter {
    * Ensure screenshot directory exists
    */
   private ensureScreenshotDirectory() {
-    const screenshotDir = path.join(app.getPath("home"), 'DevourPlay');
+    const screenshotDir = path.join(app.getPath("home"), "Pictures", 'DevourPlay');
     if (!fs.existsSync(screenshotDir)) {
       fs.mkdirSync(screenshotDir, { recursive: true });
     }
@@ -44,13 +45,13 @@ export class GameEventsService extends EventEmitter {
   private async takeGameScreenshot(eventData?: any) {
     try {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `game_event_screenshot_${this.screenshotCount++}_${timestamp}.png`;
-      const screenshotPath = path.join(app.getPath("home"), 'DevourPlay', filename);
+      const filename = `game_event_screenshot_${timestamp}_${this.screenshotCount++}.jpg`;
+      const screenshotPath = path.join(app.getPath("home"), "Pictures", 'DevourPlay', filename);
 
       // Get all available screens
       const sources = await desktopCapturer.getSources({
         types: ['window'],
-        thumbnailSize: { width: 1920, height: 1080 }
+        thumbnailSize: { width: 1366, height: 768 },
       });
 
       if (sources.length === 0) {
@@ -61,18 +62,18 @@ export class GameEventsService extends EventEmitter {
       // Find the game window by name or process
       // You might need to adjust this logic based on your specific game
       const gameWindow = sources.find(source =>
-          source.name.toLowerCase().includes('devour') || // Replace with your game name
-          source.name.toLowerCase().includes('game')
+          // source.name === this.processName,
+          source.name.toLowerCase().includes('rocket')
       );
 
       if (!gameWindow) {
-        this.emit('log', 'Game window not found among available windows');
+        this.emit('log', 'Game window not found among available windows', sources);
         return;
       }
       
-      // Convert the thumbnail to PNG buffer
+      // Convert the thumbnail to JPG buffer
       const image = gameWindow.thumbnail;
-      const buffer = image.toPNG();
+      const buffer = image.toJPEG(80);
 
       // Save screenshot to file
       fs.writeFileSync(screenshotPath, buffer);
@@ -175,6 +176,7 @@ export class GameEventsService extends EventEmitter {
       this.emit('log', 'gep: register game-detected', gameId, name, gameInfo);
       e.enable();
       this.activeGame = gameId;
+      // this.processName = name;
 
       // in order to start receiving event/info
       // setRequiredFeatures should be set
@@ -204,6 +206,12 @@ export class GameEventsService extends EventEmitter {
     this.gepApi.on('new-info-update', (e, gameId, ...args) => {
       this.emit('log', 'info-update', gameId, ...args);
       onInfoUpdatesListener(args[0]);
+      // Take screenshot when info update is triggered
+      // this.takeGameScreenshot({
+      //   gameId,
+      //   eventData: args[0],
+      //   timestamp: new Date().toISOString()
+      // });
     });
 
     // When a new Game Event is fired
