@@ -8,6 +8,7 @@ import { OverlayHotkeysService } from '../services/overlay-hotkeys.service';
 import { ExclusiveHotKeyMode, OverlayInputService } from '../services/overlay-input.service';
 import {EventBusService} from "../services/eventBus.service";
 import {WebsocketService} from "../services/websocket.service";
+import {ScreenshotService} from "../services/screenshot.service";
 
 const owElectronApp = electronApp as overwolf.OverwolfApp;
 
@@ -27,6 +28,7 @@ export class MainWindowController {
     private readonly overlayHotkeysService: OverlayHotkeysService,
     private readonly overlayInputService: OverlayInputService,
     private readonly websocketService: WebsocketService,
+    private readonly screenshotService: ScreenshotService,
     private readonly eventBusService: EventBusService,
   ) {
     this.registerToIpc();
@@ -36,6 +38,7 @@ export class MainWindowController {
     eventBusService.on('log', this.printLogMessage.bind(this));
     overlayHotkeysService.on('log', this.printLogMessage.bind(this));
     websocketService.on('log', this.printLogMessage.bind(this));
+    screenshotService.on('log', this.printLogMessage.bind(this));
 
     owElectronApp.overwolf.packages.on('crashed', (e, ...args) => {
       this.printLogMessage('package crashed', ...args);

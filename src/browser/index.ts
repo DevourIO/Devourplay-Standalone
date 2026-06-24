@@ -1,4 +1,4 @@
-import {app as ElectronApp} from 'electron';
+import {app as ElectronApp, globalShortcut} from 'electron';
 import {Application} from "./application";
 import {OverlayHotkeysService} from './services/overlay-hotkeys.service';
 import {OverlayService} from './services/overlay.service';
@@ -16,8 +16,9 @@ import {NotificationsWindowController} from "./controllers/notifications-window.
 import {WebsocketService} from "./services/websocket.service";
 import {initializeDeepLink} from "../utils/deeplink";
 import {initializeTray} from "../utils/tray";
+import {ScreenshotService} from "./services/screenshot.service";
 
-const devourPublicKey = "69bb057e5b9b2b890cffd3e4";
+const devourPublicKey = process.env.TARGET_ENV === "production" ? "6a0e339859dc0a055e4c73f6" : "69bb057e5b9b2b890cffd3e4";
 
 export let isQuitting: boolean = false;
 export function setIsQuitting(value: boolean) {
@@ -30,7 +31,8 @@ export function setIsQuitting(value: boolean) {
 const bootstrap = (): Application => {
 	const overlayService = new OverlayService();
 	const overlayHotkeysService = new OverlayHotkeysService(overlayService);
-	const gepService = new GameEventsService();
+	const screenshotService = new ScreenshotService(overlayService);
+	const gepService = new GameEventsService(screenshotService);
 	const inputService = new OverlayInputService(overlayService);
 	const websocketService = new WebsocketService(getDevourWebsocketDomain());
 
@@ -45,6 +47,7 @@ const bootstrap = (): Application => {
 		overlayHotkeysService,
 		inputService,
 		websocketService,
+		screenshotService,
 		eventBusInstance,
 	);
 
@@ -63,6 +66,7 @@ const bootstrap = (): Application => {
 		overlayService,
 		gepService,
 		websocketService,
+		screenshotService,
 		mainWindowController,
 		loginWindowController,
 		settingsWindowController,
@@ -105,6 +109,7 @@ ElectronApp.whenReady().then(() => {
 });
 
 ElectronApp.on('before-quit', (event) => {
+	globalShortcut.unregisterAll();
 	isQuitting = true;
 	eventBusInstance.emit("log", "App is quitting, running cleanup...");
 	closeLog();

@@ -13,7 +13,7 @@ export function refreshTrayMenu() {
 	if (!tray) return; // Don't create a new tray if it doesn't exist
 	const contextMenu = Menu.buildFromTemplate([
 		{
-			label: `Version ${ElectronApp.getVersion()} (${process.env.TARGET_ENV})`,
+			label: `Version ${ElectronApp.getVersion()} (${process.env.TARGET_ENV || 0})`,
 		},
 		{
 			label: "Help",

@@ -1,4 +1,4 @@
-import { app as electronApp, screen, desktopCapturer, BrowserWindow } from 'electron';
+import { app as electronApp } from 'electron';
 import { overwolf } from '@overwolf/ow-electron';
 import EventEmitter from 'events';
 import {
@@ -6,8 +6,7 @@ import {
   onInfoUpdatesListener,
   registerDevourGameListeners,
 } from "@devour/overwolf-sdk";
-import fs from 'fs';
-import path from 'path';
+import {ScreenshotService} from "./screenshot.service";
 
 const app = electronApp as overwolf.OverwolfApp;
 
@@ -20,75 +19,12 @@ export class GameEventsService extends EventEmitter {
   private gepApi: overwolf.packages.OverwolfGameEventPackage;
   private activeGame = 0;
   private gepGamesId: number[] = [];
-  private screenshotCount = 0;
-  private processName: string;
+  private screenshotService: ScreenshotService;
 
-  constructor() {
+  constructor(screenshotService: ScreenshotService) {
     super();
     this.registerOverwolfPackageManager();
-    this.ensureScreenshotDirectory();
-  }
-
-  /**
-   * Ensure screenshot directory exists
-   */
-  private ensureScreenshotDirectory() {
-    const screenshotDir = path.join(app.getPath("home"), "Pictures", 'DevourPlay');
-    if (!fs.existsSync(screenshotDir)) {
-      fs.mkdirSync(screenshotDir, { recursive: true });
-    }
-  }
-
-  /**
-   * Take a screenshot of the primary display
-   */
-  private async takeGameScreenshot(eventData?: any) {
-    try {
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `game_event_screenshot_${timestamp}_${this.screenshotCount++}.jpg`;
-      const screenshotPath = path.join(app.getPath("home"), "Pictures", 'DevourPlay', filename);
-
-      // Get all available screens
-      const sources = await desktopCapturer.getSources({
-        types: ['window'],
-        thumbnailSize: { width: 1366, height: 768 },
-      });
-
-      if (sources.length === 0) {
-        this.emit('log', 'No screens available for capture');
-        return;
-      }
-
-      // Find the game window by name or process
-      // You might need to adjust this logic based on your specific game
-      const gameWindow = sources.find(source =>
-          // source.name === this.processName,
-          source.name.toLowerCase().includes('rocket')
-      );
-
-      if (!gameWindow) {
-        this.emit('log', 'Game window not found among available windows', sources);
-        return;
-      }
-      
-      // Convert the thumbnail to JPG buffer
-      const image = gameWindow.thumbnail;
-      const buffer = image.toJPEG(80);
-
-      // Save screenshot to file
-      fs.writeFileSync(screenshotPath, buffer);
-
-      this.emit('log', `Screenshot saved: ${screenshotPath}`, eventData);
-      this.emit('screenshot-taken', { 
-        path: screenshotPath, 
-        filename, 
-        eventData,
-        screenName: gameWindow.name
-      });
-
-    } catch (error) {
-      this.emit('log', 'Error taking screenshot:', error);
-    }
+    this.screenshotService = screenshotService;
   }
 
   /**
@@ -220,11 +156,9 @@ export class GameEventsService extends EventEmitter {
       onNewEventsListener(args[0]);
       
       // Take screenshot when GEP event is triggered
-      this.takeGameScreenshot({
-        gameId,
-        eventData: args[0],
-        timestamp: new Date().toISOString()
-      });
+      if (args[0].key === "matchEnd") {
+      this.screenshotService.takeGameScreenshot();
+      }
     });
 
     // If GEP encounters an error

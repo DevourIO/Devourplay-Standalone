@@ -10,12 +10,14 @@ import {LoginWindowController} from "./controllers/login-window.controller";
 import AppUpdater from "../utils/updater";
 import {SettingsWindowController} from "./controllers/settings-window.controller";
 import {WebsocketService} from "./services/websocket.service";
+import {ScreenshotService} from "./services/screenshot.service";
 
 export class Application {
 	constructor(
 		private readonly overlayService: OverlayService,
 		private readonly gepService: GameEventsService,
 		private readonly websocketService: WebsocketService,
+		private readonly screenshotService: ScreenshotService,
 		private readonly mainWindowController: MainWindowController,
 		private readonly loginWindowController: LoginWindowController,
 		private readonly settingsWindowController: SettingsWindowController,
@@ -54,6 +56,7 @@ export class Application {
 		overlayService.on('log', writeLog);
 		eventBusService.on('log', writeLog);
 		websocketService.on('log', writeLog);
+		screenshotService.on('log', writeLog);
 	}
 
 	public run() {
