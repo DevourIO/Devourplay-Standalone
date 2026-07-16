@@ -91,9 +91,10 @@ export async function uploadLogs() {
 	const fileBuffer = fs.readFileSync(filePath);
 
 	const formData = new FormData();
+	const file = new Blob([fileBuffer], { type: "application/zip" });
 	formData.append(
 		"logFile",
-		new Blob([fileBuffer]),
+		file,
 		path.basename(filePath)
 	);
 
@@ -111,6 +112,6 @@ export async function uploadLogs() {
 
 export function archiveLogsAndUpload() {
 	archiveLogs();
-	shell.openPath(dirLogs);
+	shell.openPath(dirLogs); // Open log folder in windows explorer / mac finder
 	uploadLogs();
 }

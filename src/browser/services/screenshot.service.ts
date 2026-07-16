@@ -47,7 +47,7 @@ export class ScreenshotService extends EventEmitter {
       console.log(`[main] Manual capture hotkey registered: ${MANUAL_CAPTURE_HOTKEY}`);
     }
 
-    this.overlayApi.on('game-injected', (gameInfo) => {
+    this.overlayApi.on('game-launched', (event, gameInfo) => {
       this.windowHandle = (gameInfo?.processInfo as any)?.window_handle;
     });
 
