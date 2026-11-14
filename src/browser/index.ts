@@ -18,7 +18,14 @@ import {initializeDeepLink} from "../utils/deeplink";
 import {initializeTray} from "../utils/tray";
 import {ScreenshotService} from "./services/screenshot.service";
 
-const devourPublicKey = process.env.TARGET_ENV === "production" ? "6a0e339859dc0a055e4c73f6" : "69bb057e5b9b2b890cffd3e4";
+/*
+ * The publicKey is the PartnerService _id events are attributed to. A
+ * per-partner build sets DEVOUR_PUBLIC_KEY at build time so its events bind to
+ * that partner. When unset (the first-party DevourPlay build) it falls back to
+ * the DevourPlay self-partner id per environment.
+ */
+const devourPublicKey = process.env.DEVOUR_PUBLIC_KEY
+	|| (process.env.TARGET_ENV === "production" ? "6a0e339859dc0a055e4c73f6" : "69bb057e5b9b2b890cffd3e4");
 
 export let isQuitting: boolean = false;
 export function setIsQuitting(value: boolean) {
